@@ -1,7 +1,18 @@
+# Node Modules
 node_modules/
+
+# Enviroment Variable
+.env
+
+# Expo
 .expo/
+
+# Dist
 dist/
+
+# Logs
 npm-debug.*
+
 *.jks
 *.p8
 *.p12
@@ -10,5 +21,5 @@ npm-debug.*
 *.orig.*
 web-build/
 
-# macOS
+# DS Store
 .DS_Store
