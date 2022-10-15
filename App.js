@@ -1,50 +1,48 @@
-import { StatusBar } from "expo-status-bar";
-import { Text, View, StyleSheet, TextInput } from "react-native";
-import { useEffect, useState } from "react";
-import { io } from "socket.io-client";
+import { useEffect } from "react";
 import { SERVER_PORT } from "@env";
+import { io } from "socket.io-client";
+import { StatusBar } from "expo-status-bar";
+import { Platform } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import MainScreen from "./src/screen/MainScreen";
 
 export default function App() {
-  const [message, setMessage] = useState("");
+  const Stack = createNativeStackNavigator();
 
   useEffect(() => {
     const socket = io(`${SERVER_PORT}`);
-    socket.emit("user-send", message);
-    console.log("useEffect ~ message", message);
-    socket.on("broadcast", (data) => {
-      console.log("socket.on ~ data", data);
-    });
 
-    return () => {
-      socket.disconnect();
-    };
-  }, [message]);
+    if (Platform.OS === "web") {
+      window.addEventListener("keydown", (e) => {
+        if (e.keyCode === 37) {
+          socket.emit("user-send", "left");
+        } else if (e.keyCode === 38) {
+          socket.emit("user-send", "up");
+        } else if (e.keyCode === 39) {
+          socket.emit("user-send", "right");
+        } else if (e.keyCode === 40) {
+          socket.emit("user-send", "down");
+        }
+      });
+
+      socket.on("broadcast");
+
+      return () => {
+        socket.disconnect();
+      };
+    }
+  });
 
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <Text>{message}</Text>
-      <TextInput
-        style={styles.textInput}
-        onChangeText={(e) => setMessage(e)}
-      ></TextInput>
+    <NavigationContainer>
       <StatusBar style="auto" />
-    </View>
+      <Stack.Navigator
+        initialRouteName="Main"
+        screenOptions={{ headerShown: false }}
+      >
+        <Stack.Screen name="Main" component={MainScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  textInput: {
-    margin: 15,
-    padding: 5,
-    borderStyle: "solid",
-    borderWidth: 1,
-    borderRadius: 5,
-  },
-});
