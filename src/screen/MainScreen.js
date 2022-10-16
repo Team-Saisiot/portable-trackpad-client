@@ -20,7 +20,6 @@ const MainContainer = styled.View`
 `;
 
 const MainTitleText = styled.Text`
-  font-family: "KoPubWorldMedium";
   font-size: 50px;
 `;
 
@@ -35,6 +34,5 @@ const MainLoginButton = styled.TouchableOpacity`
 
 const MainLoginButtonText = styled.Text`
   font-size: 20px;
-  font-family: "KoPubWorldLight";
   color: #f3eee6;
 `;

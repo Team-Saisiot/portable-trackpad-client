@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { SERVER_PORT } from "@env";
+import { PACKAGE_SERVER_PORT } from "@env";
 import { io } from "socket.io-client";
 import { Platform } from "react-native";
 import { StatusBar } from "expo-status-bar";
@@ -13,7 +13,7 @@ export default function App() {
 
   // ## Socket TEST
   // useEffect(() => {
-  //   const socket = io(`${SERVER_PORT}`);
+  //   const socket = io(`${PACKAGE_SERVER_PORT}`);
 
   //   if (Platform.OS === "web") {
   //     window.addEventListener("keydown", (e) => {
