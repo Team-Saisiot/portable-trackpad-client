@@ -1,14 +1,48 @@
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
 import styled from "styled-components/native";
+import axios from "axios";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useEffect } from "react";
+import { SERVER_PORT, EXPO_CLIENT_ID, EXPO_WEB_CLIENT_ID } from "@env";
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen({ navigation }) {
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    responseType: "id_token",
+    expoClientId: EXPO_CLIENT_ID,
+    webClientId: EXPO_WEB_CLIENT_ID,
+  });
+
+  const googleLogin = async (token) => {
+    try {
+      const user = await axios.post(`${SERVER_PORT}/auth/google`, {
+        idToken: token,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    if (response?.type === "success") {
+      googleLogin(response.params.id_token);
+    }
+  }, [response]);
+
   return (
     <LoginContainer>
       <LoginPreviousScreenButton onPress={() => navigation.navigate("Main")}>
         <Ionicons name="arrow-back" size={32} color="#7e94ae" />
       </LoginPreviousScreenButton>
       <LoginTitleText>Login</LoginTitleText>
-      <LoginLoginButton>
+      <LoginLoginButton
+        disabled={!request}
+        onPress={() => {
+          promptAsync();
+        }}
+      >
         <Ionicons name="logo-google" size={32} color="#f3eee6" />
         <LoginLoginButtonText>Google Login</LoginLoginButtonText>
       </LoginLoginButton>
