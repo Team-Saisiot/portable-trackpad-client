@@ -1,10 +1,12 @@
+import { useEffect } from "react";
+import axios from "axios";
+import styled from "styled-components/native";
+import { SERVER_PORT, EXPO_CLIENT_ID, EXPO_WEB_CLIENT_ID } from "@env";
+import { Alert } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
-import styled from "styled-components/native";
-import axios from "axios";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useEffect } from "react";
-import { SERVER_PORT, EXPO_CLIENT_ID, EXPO_WEB_CLIENT_ID } from "@env";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -17,13 +19,29 @@ export default function LoginScreen({ navigation }) {
 
   const googleLogin = async (token) => {
     try {
-      const user = await axios.post(`${SERVER_PORT}/auth/google`, {
+      const user = await axios.post(`${SERVER_PORT}/login`, {
         idToken: token,
       });
+
+      await AsyncStorage.setItem("idToken", JSON.stringify(user.data));
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   };
+
+  // Logout 로직 예시
+  /* 
+  const logoutAlert = async () => {
+    await AsyncStorage.clear();
+
+    Alert.alert("Logout", "로그아웃이 완료되었습니다.", [
+      {
+        text: "확인",
+        onPress: () => navigation.navigate("Main"),
+      },
+    ]);
+  };
+  */
 
   useEffect(() => {
     if (response?.type === "success") {
