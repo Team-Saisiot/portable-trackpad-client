@@ -8,6 +8,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import MainScreen from "./src/screen/MainScreen";
 import LoginScreen from "./src/screen/LoginScreen";
 import DesktopAppDownloadScreen from "./src/screen/DesktopAppDownloadScreen";
+import NetworkScreen from "./src/screen/NetworkScreen";
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -50,6 +51,7 @@ export default function App() {
           name="DesktopAppDownload"
           component={DesktopAppDownloadScreen}
         />
+        <Stack.Screen name="Network" component={NetworkScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
