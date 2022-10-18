@@ -65,9 +65,6 @@ export default function DesktopAppDownloadScreen({ navigation }) {
       >
         <Ionicons name="arrow-back" size={32} color="#7e94ae" />
       </DesktopAppPreviousScreenButton>
-      <DesktopAppNextScreenButton onPress={toNextScreen}>
-        <Ionicons name="arrow-forward" size={32} color="#7e94ae" />
-      </DesktopAppNextScreenButton>
       <DesktopAppLogoutScreenButton onPress={logoutAlert}>
         <DesktopAppLogoutButtonText>Logout</DesktopAppLogoutButtonText>
       </DesktopAppLogoutScreenButton>
@@ -104,6 +101,9 @@ export default function DesktopAppDownloadScreen({ navigation }) {
           onPress={() => validateEmail(text)}
         />
       </UserEmailBox>
+      <DesktopAppNextScreenButton onPress={toNextScreen}>
+        <DesktopAppNextScreenButtonText>Next</DesktopAppNextScreenButtonText>
+      </DesktopAppNextScreenButton>
     </DesktopAppContainer>
   );
 }
@@ -127,12 +127,6 @@ const DesktopAppPreviousScreenButton = styled.TouchableOpacity`
   position: absolute;
   top: 40px;
   left: 20px;
-`;
-
-const DesktopAppNextScreenButton = styled.TouchableOpacity`
-  position: absolute;
-  bottom: 40px;
-  right: 20px;
 `;
 
 const DesktopAppTitleBox = styled.View`
@@ -178,4 +172,19 @@ const UserEmailPlaceHolder = styled.Text`
   position: absolute;
   font-size: 15px;
   color: #999999;
+`;
+
+const DesktopAppNextScreenButton = styled.TouchableOpacity`
+  width: 170px;
+  height: 50px;
+  margin-top: 40px;
+  justify-content: center;
+  align-items: center;
+  background-color: #7e94ae;
+  border-radius: 10px;
+`;
+
+const DesktopAppNextScreenButtonText = styled.Text`
+  font-size: 25px;
+  color: #f3eee6;
 `;
