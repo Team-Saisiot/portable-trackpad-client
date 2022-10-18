@@ -29,19 +29,19 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
-  // Logout 로직 예시
-  /* 
-  const logoutAlert = async () => {
-    await AsyncStorage.clear();
+  const toNextScreen = async () => {
+    const idToken = await AsyncStorage.getItem("idToken");
 
-    Alert.alert("Logout", "로그아웃이 완료되었습니다.", [
-      {
-        text: "확인",
-        onPress: () => navigation.navigate("Main"),
-      },
-    ]);
+    if (idToken) {
+      navigation.navigate("DesktopAppDownload");
+    } else {
+      Alert.alert("Need Login", "로그인이 필요합니다.", [
+        {
+          text: "확인",
+        },
+      ]);
+    }
   };
-  */
 
   useEffect(() => {
     if (response?.type === "success") {
@@ -54,6 +54,9 @@ export default function LoginScreen({ navigation }) {
       <LoginPreviousScreenButton onPress={() => navigation.navigate("Main")}>
         <Ionicons name="arrow-back" size={32} color="#7e94ae" />
       </LoginPreviousScreenButton>
+      <LoginNextScreenButton onPress={toNextScreen}>
+        <Ionicons name="arrow-forward" size={32} color="#7e94ae" />
+      </LoginNextScreenButton>
       <LoginTitleText>Login</LoginTitleText>
       <LoginLoginButton
         disabled={!request}
@@ -101,4 +104,10 @@ const LoginPreviousScreenButton = styled.TouchableOpacity`
   position: absolute;
   top: 40px;
   left: 20px;
+`;
+
+const LoginNextScreenButton = styled.TouchableOpacity`
+  position: absolute;
+  bottom: 40px;
+  right: 20px;
 `;
