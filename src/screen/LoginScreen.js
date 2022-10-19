@@ -10,7 +10,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 
 WebBrowser.maybeCompleteAuthSession();
 
-export default function LoginScreen({ navigation }) {
+const LoginScreen = ({ navigation }) => {
   const [request, response, promptAsync] = Google.useAuthRequest({
     responseType: "id_token",
     expoClientId: EXPO_CLIENT_ID,
@@ -69,7 +69,7 @@ export default function LoginScreen({ navigation }) {
       </LoginLoginButton>
     </LoginContainer>
   );
-}
+};
 
 const LoginContainer = styled.View`
   flex: 1;
@@ -111,3 +111,5 @@ const LoginNextScreenButton = styled.TouchableOpacity`
   bottom: 40px;
   right: 20px;
 `;
+
+export default LoginScreen;

@@ -6,7 +6,7 @@ import { Alert } from "react-native";
 import { useState } from "react";
 import { SERVER_PORT } from "@env";
 
-export default function DownloadGuideScreen({ navigation }) {
+const DownloadGuideScreen = ({ navigation }) => {
   const [email, setUserEmail] = useState("");
   const [isFocus, setIsFocus] = useState(false);
 
@@ -113,7 +113,7 @@ export default function DownloadGuideScreen({ navigation }) {
       </DownloadGuideNextScreenButton>
     </DownloadGuideContainer>
   );
-}
+};
 
 const DownloadGuideContainer = styled.View`
   flex: 1;
@@ -196,3 +196,5 @@ const DownloadGuideNextScreenButtonText = styled.Text`
   font-size: 20px;
   color: #f3eee6;
 `;
+
+export default DownloadGuideScreen;

@@ -3,7 +3,7 @@ import { Alert } from "react-native";
 import styled from "styled-components/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function NetworkGuideScreen({ navigation }) {
+const NetworkGuideScreen = ({ navigation }) => {
   const logoutAlert = async () => {
     await AsyncStorage.clear();
 
@@ -51,7 +51,7 @@ export default function NetworkGuideScreen({ navigation }) {
       </NetworkGuideNextButton>
     </NetworkGuideContainer>
   );
-}
+};
 
 const NetworkGuideContainer = styled.View`
   flex: 1;
@@ -106,3 +106,5 @@ const NetworkGuideNextButtonText = styled.Text`
   font-size: 20px;
   color: #f3eee6;
 `;
+
+export default NetworkGuideScreen;
