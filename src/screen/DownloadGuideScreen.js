@@ -6,8 +6,8 @@ import { Alert } from "react-native";
 import { useState } from "react";
 import { SERVER_PORT } from "@env";
 
-export default function DesktopAppDownloadScreen({ navigation }) {
-  const [text, onChangeText] = useState("");
+export default function DownloadGuideScreen({ navigation }) {
+  const [email, setUserEmail] = useState("");
   const [isFocus, setIsFocus] = useState(false);
 
   const logoutAlert = async () => {
@@ -31,7 +31,8 @@ export default function DesktopAppDownloadScreen({ navigation }) {
             text: "확인",
           },
         ]);
-        onChangeText(text);
+
+        setUserEmail(text);
 
         return false;
       } else {
@@ -59,107 +60,113 @@ export default function DesktopAppDownloadScreen({ navigation }) {
   };
 
   return (
-    <DesktopAppContainer>
-      <DesktopAppPreviousScreenButton
+    <DownloadGuideContainer>
+      <DownloadGuidePreviousScreenButton
         onPress={() => navigation.navigate("Main")}
       >
         <Ionicons name="arrow-back" size={32} color="#7e94ae" />
-      </DesktopAppPreviousScreenButton>
-      <DesktopAppLogoutScreenButton onPress={logoutAlert}>
-        <DesktopAppLogoutButtonText>Logout</DesktopAppLogoutButtonText>
-      </DesktopAppLogoutScreenButton>
+      </DownloadGuidePreviousScreenButton>
+      <DownloadGuideLogoutButton onPress={logoutAlert}>
+        <DownloadGuideLogoutButtonText>Logout</DownloadGuideLogoutButtonText>
+      </DownloadGuideLogoutButton>
       <Ionicons name="download-outline" size={150} color="#7e94ae" />
-      <DesktopAppTitleBox>
-        <DesktopAppTitleText>본 어플리케이션은 데스크탑에</DesktopAppTitleText>
-        <DesktopAppTitleText>프로그램설치가 필요합니다.</DesktopAppTitleText>
-      </DesktopAppTitleBox>
-      <DesktopAppDescriptionBox>
-        <DesktopAppDescriptionText>
+      <DownloadGuideTitleBox>
+        <DownloadGuideTitleText>
+          본 어플리케이션은 데스크탑에
+        </DownloadGuideTitleText>
+        <DownloadGuideTitleText>
+          프로그램설치가 필요합니다.
+        </DownloadGuideTitleText>
+      </DownloadGuideTitleBox>
+      <DownloadGuideDescriptionBox>
+        <DownloadGuideDescriptionText>
           아래에 Email을 입력하시면
-        </DesktopAppDescriptionText>
-        <DesktopAppDescriptionText>
+        </DownloadGuideDescriptionText>
+        <DownloadGuideDescriptionText>
           데스크탑 프로그램 설치파일이 전송됩니다.
-        </DesktopAppDescriptionText>
-      </DesktopAppDescriptionBox>
-      <UserEmailBox>
+        </DownloadGuideDescriptionText>
+      </DownloadGuideDescriptionBox>
+      <DownloadGuideUserEmailBox>
         <Ionicons name="mail-outline" size={30} color="#7e94ae" />
-        <UserEmailTextInput
-          onChangeText={onChangeText}
+        <DownloadGuideUserEmailTextInput
+          onChangeText={setUserEmail}
           onFocus={() => setIsFocus(true)}
           onBlur={() => setIsFocus(false)}
-          value={text}
+          value={email}
         />
-        <UserEmailPlaceHolder
+        <DownloadGuideUserEmailPlaceHolder
           style={isFocus ? { top: -10, left: 35 } : { left: 40 }}
         >
           Email
-        </UserEmailPlaceHolder>
+        </DownloadGuideUserEmailPlaceHolder>
         <Ionicons
           name="arrow-forward"
           size={24}
           color="#7e94ae"
-          onPress={() => validateEmail(text)}
+          onPress={() => validateEmail(email)}
         />
-      </UserEmailBox>
-      <DesktopAppNextScreenButton onPress={toNextScreen}>
-        <DesktopAppNextScreenButtonText>Next</DesktopAppNextScreenButtonText>
-      </DesktopAppNextScreenButton>
-    </DesktopAppContainer>
+      </DownloadGuideUserEmailBox>
+      <DownloadGuideNextScreenButton onPress={toNextScreen}>
+        <DownloadGuideNextScreenButtonText>
+          Next
+        </DownloadGuideNextScreenButtonText>
+      </DownloadGuideNextScreenButton>
+    </DownloadGuideContainer>
   );
 }
 
-const DesktopAppContainer = styled.View`
+const DownloadGuideContainer = styled.View`
   flex: 1;
   justify-content: center;
   align-items: center;
   background-color: #f3eee6;
 `;
 
-const DesktopAppTitleText = styled.Text`
+const DownloadGuideTitleText = styled.Text`
   font-size: 20px;
 `;
 
-const DesktopAppDescriptionText = styled.Text`
+const DownloadGuideDescriptionText = styled.Text`
   font-size: 12px;
 `;
 
-const DesktopAppPreviousScreenButton = styled.TouchableOpacity`
+const DownloadGuidePreviousScreenButton = styled.TouchableOpacity`
   position: absolute;
-  top: 40px;
+  top: 50px;
   left: 20px;
 `;
 
-const DesktopAppTitleBox = styled.View`
+const DownloadGuideTitleBox = styled.View`
   justify-content: center;
   align-items: center;
   margin-top: 50px;
   margin-bottom: 30px;
 `;
 
-const DesktopAppDescriptionBox = styled.View`
+const DownloadGuideDescriptionBox = styled.View`
   justify-content: center;
   align-items: center;
   margin-bottom: 30px;
 `;
 
-const DesktopAppLogoutScreenButton = styled.TouchableOpacity`
+const DownloadGuideLogoutButton = styled.TouchableOpacity`
   position: absolute;
-  top: 40px;
+  top: 50px;
   right: 20px;
 `;
 
-const DesktopAppLogoutButtonText = styled.Text`
+const DownloadGuideLogoutButtonText = styled.Text`
   margin-left: 10px;
   font-size: 20px;
   color: #7e94ae;
 `;
 
-const UserEmailBox = styled.View`
+const DownloadGuideUserEmailBox = styled.View`
   flex-direction: row;
   align-items: center;
 `;
 
-const UserEmailTextInput = styled.TextInput`
+const DownloadGuideUserEmailTextInput = styled.TextInput`
   width: 200px;
   height: 50px;
   padding: 10px;
@@ -168,23 +175,24 @@ const UserEmailTextInput = styled.TextInput`
   box-sizing: border-box;
 `;
 
-const UserEmailPlaceHolder = styled.Text`
+const DownloadGuideUserEmailPlaceHolder = styled.Text`
   position: absolute;
   font-size: 15px;
   color: #999999;
 `;
 
-const DesktopAppNextScreenButton = styled.TouchableOpacity`
-  width: 170px;
-  height: 50px;
-  margin-top: 40px;
+const DownloadGuideNextScreenButton = styled.TouchableOpacity`
+  display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: row;
+  margin-top: 30px;
+  padding: 10px 60px;
   background-color: #7e94ae;
   border-radius: 10px;
 `;
 
-const DesktopAppNextScreenButtonText = styled.Text`
-  font-size: 25px;
+const DownloadGuideNextScreenButtonText = styled.Text`
+  font-size: 20px;
   color: #f3eee6;
 `;

@@ -33,7 +33,7 @@ export default function LoginScreen({ navigation }) {
     const idToken = await AsyncStorage.getItem("idToken");
 
     if (idToken) {
-      navigation.navigate("DesktopAppDownload");
+      navigation.navigate("DownloadGuide");
     } else {
       Alert.alert("Need Login", "로그인이 필요합니다.", [
         {
@@ -102,7 +102,7 @@ const LoginLoginButtonText = styled.Text`
 
 const LoginPreviousScreenButton = styled.TouchableOpacity`
   position: absolute;
-  top: 40px;
+  top: 50px;
   left: 20px;
 `;
 
