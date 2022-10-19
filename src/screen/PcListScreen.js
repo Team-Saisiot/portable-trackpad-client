@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Alert, ScrollView } from "react-native";
 import styled from "styled-components/native";
 import axios from "axios";
@@ -9,7 +9,9 @@ import { io } from "socket.io-client";
 
 export default function PcListScreen({ navigation }) {
   const [recentPC, setRecentPc] = useState(null);
-  const [ipList, setIpList] = useState([]);
+  const [connectableIpList, setConnectableIpList] = useState([]);
+
+  const allConnectableIPs = useRef([]);
 
   const logoutAlert = async () => {
     await AsyncStorage.clear();
@@ -25,7 +27,6 @@ export default function PcListScreen({ navigation }) {
   const connectPc = async (pc) => {
     try {
       const params = { max: 1, by: "connected_at", order: "asc" };
-
       const idToken = await AsyncStorage.getItem("idToken");
 
       await axios.post(
@@ -42,32 +43,34 @@ export default function PcListScreen({ navigation }) {
     (async () => {
       try {
         const params = { max: 1, by: "connected_at", order: "asc" };
-
         const idToken = await AsyncStorage.getItem("idToken");
-        const recentPc = await axios.get(
+        const recentPcData = await axios.get(
           `${SERVER_PORT}/users/${JSON.parse(idToken).user.email}/pc`,
           { params },
         );
 
-        setRecentPc(() => recentPc.data.recentPc);
+        setRecentPc(() => recentPcData.data.recentPc);
 
-        const connectableIp = await axios.get(`${SERVER_PORT}/pcList/`);
+        const connectableIpData = await axios.get(`${SERVER_PORT}/pcList/`);
+        const localIp = connectableIpData.data.localIpAddress;
 
-        for (let i = 0; i < connectableIp.data.localIpAddress.length; i++) {
-          const socket = io(
-            `http://${connectableIp.data.localIpAddress[i].ip}:8080`,
-          );
+        await (() => {
+          for (let i = 0; i < localIp.length; i++) {
+            io(`http://${localIp[i].ip}:8080`).emit("verify-connectable");
 
-          socket.emit("verifyConnectable");
+            io(`http://${localIp[i].ip}:8080`).on("broadcast", (data) => {
+              allConnectableIPs.current.push({ name: data, ip: data });
+            });
 
-          socket.on("broadcast", (data) => {
-            console.log("socket.on ~ data", data);
-          });
+            io(`http://${localIp[i].ip}:8080`).disconnect();
+          }
+        })();
 
-          socket.disconnect();
-        }
-
-        setIpList(() => connectableIp.data.localIpAddress);
+        return () => {
+          for (let i = 0; i < localIp.length; i++) {
+            io(`http://${localIp[i].ip}:8080`).disconnect();
+          }
+        };
       } catch (error) {
         console.error(error);
       }
@@ -84,12 +87,19 @@ export default function PcListScreen({ navigation }) {
       <PcListLogoutScreenButton onPress={logoutAlert}>
         <PcListLogoutButtonText>Logout</PcListLogoutButtonText>
       </PcListLogoutScreenButton>
+      <PcListRefreshButton
+        onPress={() => {
+          setConnectableIpList(() => allConnectableIPs.current);
+        }}
+      >
+        <PcListRefreshButtonText>Refresh</PcListRefreshButtonText>
+      </PcListRefreshButton>
       <PcListTitleBox>
         <PcListTitleText>Select PC</PcListTitleText>
       </PcListTitleBox>
       <PcListBox>
         <ScrollView>
-          {ipList?.map((value, index) => {
+          {connectableIpList?.map((value, index) => {
             return (
               <PcListPc
                 key={index}
@@ -118,7 +128,7 @@ export default function PcListScreen({ navigation }) {
           <Ionicons name="desktop-sharp" size={30} color="#7e94ae" />
           <PcListPcName>{recentPC?.name}</PcListPcName>
           <PcListPcDate>
-            {new Date(recentPC?.lastAccessDate).toLocaleString("ko-KR")}
+            {new Date(recentPC?.lastAccessDate).toLocaleString()}
           </PcListPcDate>
         </PcListPc>
       )}
@@ -185,6 +195,17 @@ const PcListHorizonLine = styled.View`
   width: 200px;
   border: 1.2px solid #999999;
   opacity: 0.5;
+`;
+
+const PcListRefreshButtonText = styled.Text`
+  margin-left: 10px;
+  font-size: 20px;
+  color: #7e94ae;
+`;
+
+const PcListRefreshButton = styled.TouchableOpacity`
+  position: absolute;
+  top: 50px;
 `;
 
 const PcListLogoutButtonText = styled.Text`

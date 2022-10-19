@@ -30,54 +30,54 @@ export default function NetworkGuideScreen({ navigation }) {
   };
 
   return (
-    <NetworkContainer>
-      <NetworkPreviousScreenButton
+    <NetworkGuideContainer>
+      <NetworkGuidePreviousScreenButton
         onPress={() => navigation.navigate("DesktopAppDownload")}
       >
         <Ionicons name="arrow-back" size={32} color="#7e94ae" />
-      </NetworkPreviousScreenButton>
-      <NetworkLogoutButton onPress={logoutAlert}>
-        <NetworkLogoutButtonText>Logout</NetworkLogoutButtonText>
-      </NetworkLogoutButton>
+      </NetworkGuidePreviousScreenButton>
+      <NetworkGuideLogoutButton onPress={logoutAlert}>
+        <NetworkGuideLogoutButtonText>Logout</NetworkGuideLogoutButtonText>
+      </NetworkGuideLogoutButton>
       <Ionicons name="wifi" size={150} color="#7e94ae" />
-      <NetworkTextBox>
-        <NetworkText>본 어플리케이션은</NetworkText>
-        <NetworkText>데스크탑과 디바이스가</NetworkText>
-        <NetworkText>서로 같은 네트워크에</NetworkText>
-        <NetworkText>연결되어있어야 합니다.</NetworkText>
-      </NetworkTextBox>
-      <NetworkNextButton onPress={toNextScreen}>
-        <NetworkNextButtonText>Next</NetworkNextButtonText>
-      </NetworkNextButton>
-    </NetworkContainer>
+      <NetworkGuideTextBox>
+        <NetworkGuideText>본 어플리케이션은</NetworkGuideText>
+        <NetworkGuideText>데스크탑과 디바이스가</NetworkGuideText>
+        <NetworkGuideText>서로 같은 네트워크에</NetworkGuideText>
+        <NetworkGuideText>연결되어있어야 합니다.</NetworkGuideText>
+      </NetworkGuideTextBox>
+      <NetworkGuideNextButton onPress={toNextScreen}>
+        <NetworkGuideNextButtonText>Next</NetworkGuideNextButtonText>
+      </NetworkGuideNextButton>
+    </NetworkGuideContainer>
   );
 }
 
-const NetworkContainer = styled.View`
+const NetworkGuideContainer = styled.View`
   flex: 1;
   justify-content: center;
   align-items: center;
   background-color: #f3eee6;
 `;
 
-const NetworkPreviousScreenButton = styled.TouchableOpacity`
+const NetworkGuidePreviousScreenButton = styled.TouchableOpacity`
   position: absolute;
   top: 50px;
   left: 20px;
 `;
 
-const NetworkLogoutButton = styled.TouchableOpacity`
+const NetworkGuideLogoutButton = styled.TouchableOpacity`
   position: absolute;
   top: 50px;
   right: 20px;
 `;
-const NetworkLogoutButtonText = styled.Text`
+const NetworkGuideLogoutButtonText = styled.Text`
   font-size: 20px;
   margin-right: 10px;
   color: #7e94ae;
 `;
 
-const NetworkTextBox = styled.View`
+const NetworkGuideTextBox = styled.View`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -85,13 +85,13 @@ const NetworkTextBox = styled.View`
   margin-bottom: 50px;
 `;
 
-const NetworkText = styled.Text`
+const NetworkGuideText = styled.Text`
   font-size: 20px;
   text-align: center;
   color: #333333;
 `;
 
-const NetworkNextButton = styled.TouchableOpacity`
+const NetworkGuideNextButton = styled.TouchableOpacity`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -102,7 +102,7 @@ const NetworkNextButton = styled.TouchableOpacity`
   border-radius: 10px;
 `;
 
-const NetworkNextButtonText = styled.Text`
+const NetworkGuideNextButtonText = styled.Text`
   font-size: 20px;
   color: #f3eee6;
 `;
