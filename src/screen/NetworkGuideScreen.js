@@ -40,12 +40,12 @@ export default function NetworkGuideScreen({ navigation }) {
         <NetworkLogoutButtonText>Logout</NetworkLogoutButtonText>
       </NetworkLogoutButton>
       <Ionicons name="wifi" size={150} color="#7e94ae" />
-      <NetworkText>
-        본 어플리케이션은{"\n"}
-        데스크탑과 디바이스가{"\n"}
-        서로 같은 네트워크에{"\n"}
-        연결되어있어야 합니다.{"\n"}
-      </NetworkText>
+      <NetworkTextBox>
+        <NetworkText>본 어플리케이션은</NetworkText>
+        <NetworkText>데스크탑과 디바이스가</NetworkText>
+        <NetworkText>서로 같은 네트워크에</NetworkText>
+        <NetworkText>연결되어있어야 합니다.</NetworkText>
+      </NetworkTextBox>
       <NetworkNextButton onPress={toNextScreen}>
         <NetworkNextButtonText>Next</NetworkNextButtonText>
       </NetworkNextButton>
@@ -62,13 +62,13 @@ const NetworkContainer = styled.View`
 
 const NetworkPreviousScreenButton = styled.TouchableOpacity`
   position: absolute;
-  top: 40px;
+  top: 50px;
   left: 20px;
 `;
 
 const NetworkLogoutButton = styled.TouchableOpacity`
   position: absolute;
-  top: 40px;
+  top: 50px;
   right: 20px;
 `;
 const NetworkLogoutButtonText = styled.Text`
@@ -77,10 +77,18 @@ const NetworkLogoutButtonText = styled.Text`
   color: #7e94ae;
 `;
 
-const NetworkText = styled.Text`
+const NetworkTextBox = styled.View`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
   margin-bottom: 50px;
-  font-size: 24px;
+`;
+
+const NetworkText = styled.Text`
+  font-size: 20px;
   text-align: center;
+  color: #333333;
 `;
 
 const NetworkNextButton = styled.TouchableOpacity`
@@ -89,7 +97,7 @@ const NetworkNextButton = styled.TouchableOpacity`
   align-items: center;
   flex-direction: row;
   margin-top: 30px;
-  padding: 15px 50px;
+  padding: 10px 60px;
   background-color: #7e94ae;
   border-radius: 10px;
 `;

@@ -9,6 +9,7 @@ import MainScreen from "./src/screen/MainScreen";
 import LoginScreen from "./src/screen/LoginScreen";
 import DesktopAppDownloadScreen from "./src/screen/DesktopAppDownloadScreen";
 import NetworkGuideScreen from "./src/screen/NetworkGuideScreen";
+import PcListScreen from "./src/screen/PcListScreen";
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -52,6 +53,7 @@ export default function App() {
           component={DesktopAppDownloadScreen}
         />
         <Stack.Screen name="Network" component={NetworkGuideScreen} />
+        <Stack.Screen name="PcList" component={PcListScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

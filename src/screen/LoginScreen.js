@@ -102,7 +102,7 @@ const LoginLoginButtonText = styled.Text`
 
 const LoginPreviousScreenButton = styled.TouchableOpacity`
   position: absolute;
-  top: 40px;
+  top: 50px;
   left: 20px;
 `;
 

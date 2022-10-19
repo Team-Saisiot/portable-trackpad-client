@@ -125,7 +125,7 @@ const DesktopAppDescriptionText = styled.Text`
 
 const DesktopAppPreviousScreenButton = styled.TouchableOpacity`
   position: absolute;
-  top: 40px;
+  top: 50px;
   left: 20px;
 `;
 
@@ -144,7 +144,7 @@ const DesktopAppDescriptionBox = styled.View`
 
 const DesktopAppLogoutScreenButton = styled.TouchableOpacity`
   position: absolute;
-  top: 40px;
+  top: 50px;
   right: 20px;
 `;
 
@@ -175,16 +175,17 @@ const UserEmailPlaceHolder = styled.Text`
 `;
 
 const DesktopAppNextScreenButton = styled.TouchableOpacity`
-  width: 170px;
-  height: 50px;
-  margin-top: 40px;
+  display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: row;
+  margin-top: 30px;
+  padding: 10px 60px;
   background-color: #7e94ae;
   border-radius: 10px;
 `;
 
 const DesktopAppNextScreenButtonText = styled.Text`
-  font-size: 25px;
+  font-size: 20px;
   color: #f3eee6;
 `;
