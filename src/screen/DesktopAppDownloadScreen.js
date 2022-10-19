@@ -48,7 +48,7 @@ export default function DesktopAppDownloadScreen({ navigation }) {
     const idToken = await AsyncStorage.getItem("idToken");
 
     if (idToken) {
-      navigation.navigate("PcList");
+      navigation.navigate("Network");
     } else {
       Alert.alert("Need Login", "로그인이 필요합니다.", [
         {
