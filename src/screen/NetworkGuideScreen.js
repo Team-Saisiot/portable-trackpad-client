@@ -3,7 +3,7 @@ import { Alert } from "react-native";
 import styled from "styled-components/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function NetworkScreen({ navigation }) {
+export default function NetworkGuideScreen({ navigation }) {
   const logoutAlert = async () => {
     await AsyncStorage.clear();
 
