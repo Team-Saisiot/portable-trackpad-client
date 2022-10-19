@@ -7,7 +7,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { SERVER_PORT } from "@env";
 import { io } from "socket.io-client";
 
-export default function PcListScreen({ navigation }) {
+const PcListScreen = ({ navigation }) => {
   const [recentPC, setRecentPc] = useState(null);
   const [connectableIpList, setConnectableIpList] = useState([]);
 
@@ -134,7 +134,7 @@ export default function PcListScreen({ navigation }) {
       )}
     </PcListContainer>
   );
-}
+};
 
 const PcListContainer = styled.View`
   flex: 1;
@@ -219,3 +219,5 @@ const PcListLogoutScreenButton = styled.TouchableOpacity`
   top: 50px;
   right: 20px;
 `;
+
+export default PcListScreen;

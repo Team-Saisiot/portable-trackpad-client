@@ -1,7 +1,7 @@
 import styled from "styled-components/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-export default function TouchPadScreen({ navigation }) {
+const TouchPadScreen = ({ navigation }) => {
   return (
     <TouchPadContainer>
       <TouchPadPreviousScreenButton
@@ -15,7 +15,7 @@ export default function TouchPadScreen({ navigation }) {
       <TrackPadTouchArea />
     </TouchPadContainer>
   );
-}
+};
 
 const TouchPadContainer = styled.View`
   flex: 1;
@@ -45,3 +45,5 @@ const TrackPadTouchArea = styled.TouchableOpacity`
   border-radius: 20px;
   opacity: 0.2;
 `;
+
+export default TouchPadScreen;

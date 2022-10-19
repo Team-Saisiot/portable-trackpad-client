@@ -1,6 +1,6 @@
 import styled from "styled-components/native";
 
-export default function MainScreen({ navigation }) {
+const MainScreen = ({ navigation }) => {
   return (
     <MainContainer>
       <MainTitleText>Portable</MainTitleText>
@@ -10,7 +10,7 @@ export default function MainScreen({ navigation }) {
       </MainLoginButton>
     </MainContainer>
   );
-}
+};
 
 const MainContainer = styled.View`
   flex: 1;
@@ -36,3 +36,5 @@ const MainLoginButtonText = styled.Text`
   font-size: 20px;
   color: #f3eee6;
 `;
+
+export default MainScreen;
