@@ -6,6 +6,7 @@ import LoginScreen from "./src/screen/LoginScreen";
 import DownloadGuideScreen from "./src/screen/DownloadGuideScreen";
 import NetworkGuideScreen from "./src/screen/NetworkGuideScreen";
 import PcListScreen from "./src/screen/PcListScreen";
+import TouchPadScreen from "./src/screen/TouchPadScreen";
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -22,6 +23,7 @@ export default function App() {
         <Stack.Screen name="DownloadGuide" component={DownloadGuideScreen} />
         <Stack.Screen name="Network" component={NetworkGuideScreen} />
         <Stack.Screen name="PcList" component={PcListScreen} />
+        <Stack.Screen name="TouchPad" component={TouchPadScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
