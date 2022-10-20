@@ -1,18 +1,36 @@
 import styled from "styled-components/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { io } from "socket.io-client";
+import { PACKAGE_SERVER_PORT } from "@env";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 
-const TouchPadScreen = ({ navigation }) => {
+const TouchPadScreen = ({ navigation: { navigate }, route }) => {
+  const socket = io(`http://${route.params.ipAddress}:${PACKAGE_SERVER_PORT}`);
+  const tapGesture = Gesture.Tap();
+
+  tapGesture.onTouchesUp((event) => {
+    if (event.numberOfTouches === 0) {
+      return socket.emit("user-send", ["click"]);
+    }
+
+    return () => {
+      socket.disconnect();
+    };
+  });
+
+  const composedGesture = Gesture.Race(tapGesture);
+
   return (
     <TouchPadContainer>
-      <TouchPadPreviousScreenButton
-        onPress={() => navigation.navigate("PcList")}
-      >
+      <TouchPadPreviousScreenButton onPress={() => navigate("PcList")}>
         <Ionicons name="arrow-back" size={32} color="#7e94ae" />
       </TouchPadPreviousScreenButton>
       <TouchPadSettingButton>
         <Ionicons name="settings" size={24} color="#7e94ae" />
       </TouchPadSettingButton>
-      <TrackPadTouchArea />
+      <GestureDetector gesture={composedGesture}>
+        <TouchPadTouchArea />
+      </GestureDetector>
     </TouchPadContainer>
   );
 };
@@ -36,7 +54,7 @@ const TouchPadSettingButton = styled.TouchableOpacity`
   right: 20px;
 `;
 
-const TrackPadTouchArea = styled.TouchableOpacity`
+const TouchPadTouchArea = styled.TouchableOpacity`
   margin-top: 15%;
   height: 80%;
   width: 90%;

@@ -4,7 +4,7 @@ const MainScreen = ({ navigation }) => {
   return (
     <MainContainer>
       <MainTitleText>Portable</MainTitleText>
-      <MainTitleText>TrackPad</MainTitleText>
+      <MainTitleText>TouchPad</MainTitleText>
       <MainLoginButton onPress={() => navigation.navigate("Login")}>
         <MainLoginButtonText>Login</MainLoginButtonText>
       </MainLoginButton>
