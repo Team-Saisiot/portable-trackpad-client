@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { Alert, ScrollView } from "react-native";
 import styled from "styled-components/native";
 import axios from "axios";
@@ -6,10 +6,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { SERVER_PORT } from "@env";
 import { io } from "socket.io-client";
+import { useFocusEffect } from "@react-navigation/native";
 
 const PcListScreen = ({ navigation }) => {
   const [recentPC, setRecentPc] = useState(null);
   const [connectableIpList, setConnectableIpList] = useState([]);
+  const [isSettingButtonPressed, setIsSettingButtonPressed] = useState(false);
 
   const allConnectableIPs = useRef([]);
 
@@ -39,9 +41,11 @@ const PcListScreen = ({ navigation }) => {
     }
   };
 
-  useEffect(() => {
-    (async () => {
-      try {
+  useFocusEffect(
+    React.useCallback(() => {
+      let localIp;
+
+      (async () => {
         const params = { max: 1, by: "connected_at", order: "asc" };
         const idToken = await AsyncStorage.getItem("idToken");
         const recentPcData = await axios.get(
@@ -52,48 +56,62 @@ const PcListScreen = ({ navigation }) => {
         setRecentPc(() => recentPcData.data.recentPc);
 
         const connectableIpData = await axios.get(`${SERVER_PORT}/localIps/`);
-        const localIp = connectableIpData.data.localIpAddress;
 
-        await (() => {
-          for (let i = 0; i < localIp.length; i++) {
-            io(`http://${localIp[i].ip}:8080`).emit("verify-connectable");
+        localIp = connectableIpData.data.localIpAddress;
 
-            io(`http://${localIp[i].ip}:8080`).on("broadcast", (data) => {
-              allConnectableIPs.current.push({ name: data, ip: data });
-            });
+        for (let i = 0; i < localIp.length; i++) {
+          io(`http://${localIp[i].ip}:8080`).emit("verify-connectable");
 
-            io(`http://${localIp[i].ip}:8080`).disconnect();
-          }
-        })();
+          io(`http://${localIp[i].ip}:8080`).on("broadcast", (data) => {
+            allConnectableIPs.current.push({ name: data, ip: data });
+          });
 
-        return () => {
-          for (let i = 0; i < localIp.length; i++) {
-            io(`http://${localIp[i].ip}:8080`).disconnect();
-          }
-        };
-      } catch (error) {
-        console.error(error);
-      }
-    })();
-  }, []);
+          io(`http://${localIp[i].ip}:8080`).disconnect();
+        }
+      })();
+
+      return () => {
+        for (let i = 0; i < localIp?.length; i++) {
+          io(`http://${localIp[i].ip}:8080`).disconnect();
+        }
+      };
+    }, []),
+  );
 
   return (
     <PcListContainer>
       <PcListPreviousScreenButton
-        onPress={() => navigation.navigate("Network")}
+        onPress={() => navigation.navigate("NetworkGuide")}
       >
         <Ionicons name="arrow-back" size={32} color="#7e94ae" />
       </PcListPreviousScreenButton>
-      <PcListLogoutScreenButton onPress={logoutAlert}>
-        <PcListLogoutButtonText>Logout</PcListLogoutButtonText>
-      </PcListLogoutScreenButton>
-      <PcListRefreshButton
-        onPress={() => {
-          setConnectableIpList(() => allConnectableIPs.current);
-        }}
+      <PopularGestureSettingButton
+        onPress={() => setIsSettingButtonPressed(!isSettingButtonPressed)}
       >
-        <PcListRefreshButtonText>Refresh</PcListRefreshButtonText>
-      </PcListRefreshButton>
+        <Ionicons name="settings" size={24} color="#7e94ae" />
+        <PopularGestureSettingMenuBox
+          style={
+            isSettingButtonPressed
+              ? { display: "flex" }
+              : { display: "none", transform: [{ translateY: -80 }] }
+          }
+        >
+          <PopularGestureSettingMenuTextBox
+            onPress={() => {
+              setConnectableIpList(() => allConnectableIPs.current);
+            }}
+          >
+            <PopularGestureSettingMenuText>
+              Select PC 새로고침
+            </PopularGestureSettingMenuText>
+          </PopularGestureSettingMenuTextBox>
+          <PopularGestureSettingMenuTextBox onPress={logoutAlert}>
+            <PopularGestureSettingMenuText>
+              로그아웃
+            </PopularGestureSettingMenuText>
+          </PopularGestureSettingMenuTextBox>
+        </PopularGestureSettingMenuBox>
+      </PopularGestureSettingButton>
       <PcListTitleBox>
         <PcListTitleText>Select PC</PcListTitleText>
       </PcListTitleBox>
@@ -158,6 +176,7 @@ const PcListTitleBox = styled.View`
   align-items: center;
   margin-bottom: 30px;
   color: #333333;
+  z-index: -1;
 `;
 
 const PcListBox = styled.View`
@@ -197,27 +216,36 @@ const PcListHorizonLine = styled.View`
   opacity: 0.5;
 `;
 
-const PcListRefreshButtonText = styled.Text`
-  margin-left: 10px;
-  font-size: 20px;
-  color: #7e94ae;
-`;
-
-const PcListRefreshButton = styled.TouchableOpacity`
+const PopularGestureSettingButton = styled.TouchableOpacity`
   position: absolute;
-  top: 50px;
-`;
-
-const PcListLogoutButtonText = styled.Text`
-  margin-left: 10px;
-  font-size: 20px;
-  color: #7e94ae;
-`;
-
-const PcListLogoutScreenButton = styled.TouchableOpacity`
-  position: absolute;
-  top: 50px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+  top: 55px;
   right: 20px;
+`;
+
+const PopularGestureSettingMenuBox = styled.View`
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  margin-top: 10px;
+  background-color: white;
+  border: 1px solid #888888;
+  border-radius: 10px;
+`;
+
+const PopularGestureSettingMenuTextBox = styled.TouchableOpacity`
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  width: 166px;
+  background-color: transparent;
+`;
+
+const PopularGestureSettingMenuText = styled.Text`
+  padding: 10px 15px;
+  font-size: 18px;
 `;
 
 export default PcListScreen;

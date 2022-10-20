@@ -49,7 +49,7 @@ const DownloadGuideScreen = ({ navigation }) => {
     const idToken = await AsyncStorage.getItem("idToken");
 
     if (idToken) {
-      navigation.navigate("Network");
+      navigation.navigate("NetworkGuide");
     } else {
       Alert.alert("Need Login", "로그인이 필요합니다.", [
         {
@@ -66,9 +66,6 @@ const DownloadGuideScreen = ({ navigation }) => {
       >
         <Ionicons name="arrow-back" size={32} color="#7e94ae" />
       </DownloadGuidePreviousScreenButton>
-      <DownloadGuideLogoutButton onPress={logoutAlert}>
-        <DownloadGuideLogoutButtonText>Logout</DownloadGuideLogoutButtonText>
-      </DownloadGuideLogoutButton>
       <Ionicons name="download-outline" size={150} color="#7e94ae" />
       <DownloadGuideTitleBox>
         <DownloadGuideTitleText>

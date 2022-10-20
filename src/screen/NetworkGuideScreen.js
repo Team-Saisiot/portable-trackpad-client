@@ -32,13 +32,10 @@ const NetworkGuideScreen = ({ navigation }) => {
   return (
     <NetworkGuideContainer>
       <NetworkGuidePreviousScreenButton
-        onPress={() => navigation.navigate("DesktopAppDownload")}
+        onPress={() => navigation.navigate("DownloadGuide")}
       >
         <Ionicons name="arrow-back" size={32} color="#7e94ae" />
       </NetworkGuidePreviousScreenButton>
-      <NetworkGuideLogoutButton onPress={logoutAlert}>
-        <NetworkGuideLogoutButtonText>Logout</NetworkGuideLogoutButtonText>
-      </NetworkGuideLogoutButton>
       <Ionicons name="wifi" size={150} color="#7e94ae" />
       <NetworkGuideTextBox>
         <NetworkGuideText>본 어플리케이션은</NetworkGuideText>
