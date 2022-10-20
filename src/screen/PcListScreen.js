@@ -51,7 +51,7 @@ const PcListScreen = ({ navigation }) => {
 
         setRecentPc(() => recentPcData.data.recentPc);
 
-        const connectableIpData = await axios.get(`${SERVER_PORT}/pcList/`);
+        const connectableIpData = await axios.get(`${SERVER_PORT}/localIps/`);
         const localIp = connectableIpData.data.localIpAddress;
 
         await (() => {
@@ -105,7 +105,7 @@ const PcListScreen = ({ navigation }) => {
                 key={index}
                 onPress={() => {
                   connectPc(value);
-                  navigation.navigate("TrackPad", { ipAddress: value?.ip });
+                  navigation.navigate("TouchPad", { ipAddress: value?.ip });
                 }}
               >
                 <Ionicons name="desktop-sharp" size={30} color="#7e94ae" />
@@ -122,7 +122,7 @@ const PcListScreen = ({ navigation }) => {
       {recentPC?.name && (
         <PcListPc
           onPress={() => {
-            navigation.navigate("TrackPad", { ipAddress: recentPC?.name });
+            navigation.navigate("TouchPad", { ipAddress: recentPC?.name });
           }}
         >
           <Ionicons name="desktop-sharp" size={30} color="#7e94ae" />
