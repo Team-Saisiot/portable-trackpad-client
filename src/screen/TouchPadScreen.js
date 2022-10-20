@@ -10,12 +10,18 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
 
   tapGesture.onTouchesUp((event) => {
     if (event.numberOfTouches === 0) {
-      return socket.emit("user-send", ["click"]);
-    }
+      socket.emit("user-send", ["click"]);
 
-    return () => {
-      socket.disconnect();
-    };
+      return () => {
+        socket.disconnect();
+      };
+    } else if (event.numberOfTouches === 1) {
+      socket.emit("user-send", ["rightClick"]);
+
+      return () => {
+        socket.disconnect();
+      };
+    }
   });
 
   const composedGesture = Gesture.Race(tapGesture);
