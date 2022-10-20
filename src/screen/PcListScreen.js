@@ -4,7 +4,7 @@ import styled from "styled-components/native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { SERVER_PORT } from "@env";
+import { SERVER_PORT, PACKAGE_SERVER_PORT } from "@env";
 import { io } from "socket.io-client";
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -60,19 +60,24 @@ const PcListScreen = ({ navigation }) => {
         localIp = connectableIpData.data.localIpAddress;
 
         for (let i = 0; i < localIp.length; i++) {
-          io(`http://${localIp[i].ip}:8080`).emit("verify-connectable");
+          io(`http://${localIp[i].ip}:${PACKAGE_SERVER_PORT}`).emit(
+            "verify-connectable",
+          );
 
-          io(`http://${localIp[i].ip}:8080`).on("broadcast", (data) => {
-            allConnectableIPs.current.push({ name: data, ip: data });
-          });
+          io(`http://${localIp[i].ip}:${PACKAGE_SERVER_PORT}`).on(
+            "broadcast",
+            (data) => {
+              allConnectableIPs.current.push({ name: data, ip: data });
+            },
+          );
 
-          io(`http://${localIp[i].ip}:8080`).disconnect();
+          io(`http://${localIp[i].ip}:${PACKAGE_SERVER_PORT}`).disconnect();
         }
       })();
 
       return () => {
         for (let i = 0; i < localIp?.length; i++) {
-          io(`http://${localIp[i].ip}:8080`).disconnect();
+          io(`http://${localIp[i].ip}:${PACKAGE_SERVER_PORT}`).disconnect();
         }
       };
     }, []),

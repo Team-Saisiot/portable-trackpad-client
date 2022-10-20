@@ -10,17 +10,6 @@ const DownloadGuideScreen = ({ navigation }) => {
   const [email, setUserEmail] = useState("");
   const [isFocus, setIsFocus] = useState(false);
 
-  const logoutAlert = async () => {
-    await AsyncStorage.clear();
-
-    Alert.alert("Logout", "로그아웃이 완료되었습니다.", [
-      {
-        text: "확인",
-        onPress: () => navigation.navigate("Main"),
-      },
-    ]);
-  };
-
   const validateEmail = async (text) => {
     const reg = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
 
@@ -144,18 +133,6 @@ const DownloadGuideDescriptionBox = styled.View`
   justify-content: center;
   align-items: center;
   margin-bottom: 30px;
-`;
-
-const DownloadGuideLogoutButton = styled.TouchableOpacity`
-  position: absolute;
-  top: 50px;
-  right: 20px;
-`;
-
-const DownloadGuideLogoutButtonText = styled.Text`
-  margin-left: 10px;
-  font-size: 20px;
-  color: #7e94ae;
 `;
 
 const DownloadGuideUserEmailBox = styled.View`
