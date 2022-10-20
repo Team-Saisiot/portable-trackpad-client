@@ -21,7 +21,7 @@ export default function App() {
         <Stack.Screen name="Main" component={MainScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="DownloadGuide" component={DownloadGuideScreen} />
-        <Stack.Screen name="Network" component={NetworkGuideScreen} />
+        <Stack.Screen name="NetworkGuide" component={NetworkGuideScreen} />
         <Stack.Screen name="PcList" component={PcListScreen} />
         <Stack.Screen name="TouchPad" component={TouchPadScreen} />
       </Stack.Navigator>
