@@ -1,12 +1,18 @@
-import styled from "styled-components/native";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { io } from "socket.io-client";
 import { PACKAGE_SERVER_PORT } from "@env";
+import { useRef } from "react";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import styled from "styled-components/native";
 
 const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   const socket = io(`http://${route.params.ipAddress}:${PACKAGE_SERVER_PORT}`);
+
+  const xPosition = useRef(0);
+  const yPosition = useRef(0);
+
   const tapGesture = Gesture.Tap();
+  const panGesture = Gesture.Pan();
 
   tapGesture.onTouchesUp((event) => {
     if (event.numberOfTouches === 0) {
@@ -24,7 +30,24 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
     }
   });
 
-  const composedGesture = Gesture.Race(tapGesture);
+  panGesture.onUpdate((event) => {
+    if (event.numberOfPointers === 1) {
+      socket.emit("user-send", [
+        "move",
+        parseInt(event.absoluteX) - xPosition.current,
+        parseInt(event.absoluteY) - yPosition.current,
+      ]);
+    }
+
+    xPosition.current = parseInt(event.absoluteX);
+    yPosition.current = parseInt(event.absoluteY);
+
+    return () => {
+      socket.disconnect();
+    };
+  });
+
+  const composedGesture = Gesture.Race(tapGesture, panGesture);
 
   return (
     <TouchPadContainer>
