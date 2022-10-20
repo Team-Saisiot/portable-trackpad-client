@@ -32,7 +32,11 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   };
 
   const panGesture = Gesture.Pan();
+  const twoPointPanGesture = Gesture.Pan();
   const tapGesture = Gesture.Tap();
+
+  twoPointPanGesture.minPointers(2);
+  twoPointPanGesture.maxPointers(2);
 
   tapGesture.onTouchesUp((event) => {
     if (event.numberOfTouches === 0) {
@@ -67,7 +71,24 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
     }
   });
 
-  const composedGesture = Gesture.Race(panGesture, tapGesture);
+  twoPointPanGesture.onUpdate((event) => {
+    if (event.numberOfPointers === 2) {
+      socket.emit("user-send", [
+        "scroll",
+        0,
+        (parseInt(event.absoluteY) - yPosition.current) * 4,
+      ]);
+    }
+
+    xPosition.current = parseInt(event.absoluteX);
+    yPosition.current = parseInt(event.absoluteY);
+  });
+
+  const composedGesture = Gesture.Race(
+    twoPointPanGesture,
+    panGesture,
+    tapGesture,
+  );
 
   useFocusEffect(
     React.useCallback(() => {
