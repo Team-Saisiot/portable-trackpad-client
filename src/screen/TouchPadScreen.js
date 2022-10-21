@@ -87,6 +87,14 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
     yPosition.current = parseInt(event.absoluteY);
   });
 
+  twoPointPanGesture.onEnd((event) => {
+    if (event.translationX < 0 && Math.abs(event.translationY) < 10) {
+      socket.emit("user-send", ["goForwardInBrowser"]);
+    } else if (event.translationX > 0 && Math.abs(event.translationY) < 10) {
+      socket.emit("user-send", ["goBackInBrowser"]);
+    }
+  });
+
   rotationGesture.onUpdate((event) => {
     count++;
 
