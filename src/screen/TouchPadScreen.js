@@ -20,6 +20,8 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
 
   const socket = io(`http://${route.params.ipAddress}:${PACKAGE_SERVER_PORT}`);
 
+  let count = 0;
+
   const logoutAlert = async () => {
     await AsyncStorage.clear();
 
@@ -34,6 +36,7 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   const panGesture = Gesture.Pan();
   const twoPointPanGesture = Gesture.Pan();
   const tapGesture = Gesture.Tap();
+  const rotationGesture = Gesture.Rotation();
 
   twoPointPanGesture.minPointers(2);
   twoPointPanGesture.maxPointers(2);
@@ -84,10 +87,25 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
     yPosition.current = parseInt(event.absoluteY);
   });
 
+  rotationGesture.onUpdate((event) => {
+    count++;
+
+    if (event.numberOfPointers === 3 && count > 3) {
+      socket.emit("user-send", ["volume", event.rotation]);
+
+      count = 0;
+
+      return () => {
+        socket.disconnect();
+      };
+    }
+  });
+
   const composedGesture = Gesture.Race(
     twoPointPanGesture,
     panGesture,
     tapGesture,
+    rotationGesture,
   );
 
   useFocusEffect(
