@@ -34,10 +34,13 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   };
 
   const panGesture = Gesture.Pan();
+  const fourPointPanGesture = Gesture.Pan();
   const twoPointPanGesture = Gesture.Pan();
   const tapGesture = Gesture.Tap();
   const rotationGesture = Gesture.Rotation();
 
+  fourPointPanGesture.minPointers(4);
+  fourPointPanGesture.maxPointers(4);
   twoPointPanGesture.minPointers(2);
   twoPointPanGesture.maxPointers(2);
 
@@ -74,6 +77,14 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
     }
   });
 
+  fourPointPanGesture.onEnd((event) => {
+    if (event.translationX > 0) {
+      socket.emit("user-send", ["goForwardInTap"]);
+    } else {
+      socket.emit("user-send", ["goBackInTap"]);
+    }
+  });
+
   twoPointPanGesture.onUpdate((event) => {
     if (event.numberOfPointers === 2) {
       socket.emit("user-send", [
@@ -87,14 +98,6 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
     yPosition.current = parseInt(event.absoluteY);
   });
 
-  twoPointPanGesture.onEnd((event) => {
-    if (event.translationX < 0 && Math.abs(event.translationY) < 10) {
-      socket.emit("user-send", ["goForwardInBrowser"]);
-    } else if (event.translationX > 0 && Math.abs(event.translationY) < 10) {
-      socket.emit("user-send", ["goBackInBrowser"]);
-    }
-  });
-
   rotationGesture.onUpdate((event) => {
     count++;
 
@@ -102,14 +105,11 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
       socket.emit("user-send", ["volume", event.rotation]);
 
       count = 0;
-
-      return () => {
-        socket.disconnect();
-      };
     }
   });
 
   const composedGesture = Gesture.Race(
+    fourPointPanGesture,
     twoPointPanGesture,
     panGesture,
     tapGesture,
