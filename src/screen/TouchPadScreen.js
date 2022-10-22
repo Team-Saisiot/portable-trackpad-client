@@ -21,6 +21,9 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   const socket = io(`http://${route.params.ipAddress}:${PACKAGE_SERVER_PORT}`);
 
   let count = 0;
+  let zero = 0;
+  let fortyFive = 0;
+  let ninety = 0;
 
   const logoutAlert = async () => {
     await AsyncStorage.clear();
@@ -69,12 +72,51 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
 
     xPosition.current = parseInt(event.absoluteX);
     yPosition.current = parseInt(event.absoluteY);
+
+    const xtest = event.absoluteX - xPosition.current;
+    const ytest = event.absoluteY - yPosition.current;
+
+    const radian = Math.atan2(ytest, xtest);
+
+    let degree = (radian * 180) / Math.PI;
+
+    if (ytest < 0) {
+      degree += 180;
+    }
+
+    if (degree === 90) {
+      ninety++;
+    } else if (degree === 45) {
+      fortyFive++;
+    } else if (degree === 0) {
+      zero++;
+    }
   });
 
   panGesture.onTouchesUp((event) => {
     if (event.numberOfTouches === 2) {
       socket.emit("user-send", ["dragUp"]);
     }
+  });
+
+  const getFigure = () => {
+    if (Math.max(ninety, fortyFive, zero) === zero) {
+      if (ninety > fortyFive) {
+        socket.emit("drawing", ["동그라미"]);
+      } else if (ninety < fortyFive) {
+        socket.emit("drawing", ["세모"]);
+      }
+    } else if (Math.max(ninety, fortyFive, zero) === ninety) {
+      socket.emit("drawing", ["네모"]);
+    }
+
+    ninety = 0;
+    fortyFive = 0;
+    zero = 0;
+  };
+
+  panGesture.onEnd(() => {
+    getFigure();
   });
 
   fourPointPanGesture.onEnd((event) => {
