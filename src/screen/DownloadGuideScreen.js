@@ -5,6 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert } from "react-native";
 import { useState } from "react";
 import { SERVER_PORT } from "@env";
+import colors from "../constants/colors";
 
 const DownloadGuideScreen = ({ navigation }) => {
   const [email, setUserEmail] = useState("");
@@ -53,9 +54,9 @@ const DownloadGuideScreen = ({ navigation }) => {
       <DownloadGuidePreviousScreenButton
         onPress={() => navigation.navigate("Main")}
       >
-        <Ionicons name="arrow-back" size={32} color="#7e94ae" />
+        <Ionicons name="arrow-back" size={32} color={colors.MAIN_COLOR} />
       </DownloadGuidePreviousScreenButton>
-      <Ionicons name="download-outline" size={150} color="#7e94ae" />
+      <Ionicons name="download-outline" size={150} color={colors.MAIN_COLOR} />
       <DownloadGuideTitleBox>
         <DownloadGuideTitleText>
           본 어플리케이션은 데스크탑에
@@ -73,7 +74,7 @@ const DownloadGuideScreen = ({ navigation }) => {
         </DownloadGuideDescriptionText>
       </DownloadGuideDescriptionBox>
       <DownloadGuideUserEmailBox>
-        <Ionicons name="mail-outline" size={30} color="#7e94ae" />
+        <Ionicons name="mail-outline" size={30} color={colors.MAIN_COLOR} />
         <DownloadGuideUserEmailTextInput
           onChangeText={setUserEmail}
           onFocus={() => setIsFocus(true)}
@@ -88,7 +89,7 @@ const DownloadGuideScreen = ({ navigation }) => {
         <Ionicons
           name="arrow-forward"
           size={24}
-          color="#7e94ae"
+          color={colors.MAIN_COLOR}
           onPress={() => validateEmail(email)}
         />
       </DownloadGuideUserEmailBox>
@@ -105,7 +106,7 @@ const DownloadGuideContainer = styled.View`
   flex: 1;
   justify-content: center;
   align-items: center;
-  background-color: #f3eee6;
+  background-color: ${colors.BACKGROUND_COLOR};
 `;
 
 const DownloadGuideTitleText = styled.Text`
@@ -162,13 +163,13 @@ const DownloadGuideNextScreenButton = styled.TouchableOpacity`
   flex-direction: row;
   margin-top: 30px;
   padding: 10px 60px;
-  background-color: #7e94ae;
+  background-color: ${colors.MAIN_COLOR};
   border-radius: 10px;
 `;
 
 const DownloadGuideNextScreenButtonText = styled.Text`
   font-size: 20px;
-  color: #f3eee6;
+  color: ${colors.BACKGROUND_COLOR};
 `;
 
 export default DownloadGuideScreen;

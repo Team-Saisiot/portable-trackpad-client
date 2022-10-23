@@ -11,9 +11,11 @@ import {
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import styled from "styled-components/native";
+import colors from "../constants/colors";
 
 const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   const [isSettingButtonPressed, setIsSettingButtonPressed] = useState(false);
+  const [isDrawingMode, setIsDrawingMode] = useState(false);
 
   const xPosition = useRef(0);
   const yPosition = useRef(0);
@@ -37,6 +39,7 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   };
 
   const panGesture = Gesture.Pan();
+  const drawingGesture = Gesture.Pan();
   const fourPointPanGesture = Gesture.Pan();
   const twoPointPanGesture = Gesture.Pan();
   const tapGesture = Gesture.Tap();
@@ -72,6 +75,17 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
 
     xPosition.current = parseInt(event.absoluteX);
     yPosition.current = parseInt(event.absoluteY);
+  });
+
+  panGesture.onTouchesUp((event) => {
+    if (event.numberOfTouches === 2) {
+      socket.emit("user-send", ["dragUp"]);
+    }
+  });
+
+  drawingGesture.onUpdate((event) => {
+    xPosition.current = parseInt(event.absoluteX);
+    yPosition.current = parseInt(event.absoluteY);
 
     const xtest = event.absoluteX - xPosition.current;
     const ytest = event.absoluteY - yPosition.current;
@@ -84,39 +98,31 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
       degree += 180;
     }
 
-    if (degree === 90) {
+    if (degree < 97 && degree > 87) {
       ninety++;
-    } else if (degree === 45) {
+    } else if (degree < 47 && degree > 42) {
       fortyFive++;
-    } else if (degree === 0) {
+    } else if (degree < 4) {
       zero++;
     }
   });
 
-  panGesture.onTouchesUp((event) => {
-    if (event.numberOfTouches === 2) {
-      socket.emit("user-send", ["dragUp"]);
-    }
-  });
-
-  const getFigure = () => {
+  drawingGesture.onEnd(() => {
     if (Math.max(ninety, fortyFive, zero) === zero) {
       if (ninety > fortyFive) {
-        socket.emit("drawing", ["동그라미"]);
+        socket.emit("drawing", ["circle"]);
       } else if (ninety < fortyFive) {
-        socket.emit("drawing", ["세모"]);
+        socket.emit("drawing", ["triangle"]);
       }
     } else if (Math.max(ninety, fortyFive, zero) === ninety) {
-      socket.emit("drawing", ["네모"]);
+      socket.emit("drawing", ["square"]);
+    } else {
+      socket.emit("drawing", ["circle"]);
     }
 
     ninety = 0;
     fortyFive = 0;
     zero = 0;
-  };
-
-  panGesture.onEnd(() => {
-    getFigure();
   });
 
   fourPointPanGesture.onEnd((event) => {
@@ -150,13 +156,15 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
     }
   });
 
-  const composedGesture = Gesture.Race(
-    fourPointPanGesture,
-    twoPointPanGesture,
-    panGesture,
-    tapGesture,
-    rotationGesture,
-  );
+  const composedGesture = isDrawingMode
+    ? Gesture.Race(drawingGesture)
+    : Gesture.Race(
+        fourPointPanGesture,
+        twoPointPanGesture,
+        panGesture,
+        tapGesture,
+        rotationGesture,
+      );
 
   useFocusEffect(
     React.useCallback(() => {
@@ -170,12 +178,12 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <TouchPadContainer>
         <TouchPadPreviousScreenButton onPress={() => navigate("PcList")}>
-          <Ionicons name="arrow-back" size={32} color="#7e94ae" />
+          <Ionicons name="arrow-back" size={32} color={colors.MAIN_COLOR} />
         </TouchPadPreviousScreenButton>
         <TouchPadSettingButton
           onPress={() => setIsSettingButtonPressed(!isSettingButtonPressed)}
         >
-          <Ionicons name="settings" size={24} color="#7e94ae" />
+          <Ionicons name="settings" size={24} color={colors.MAIN_COLOR} />
           <Animated.View>
             <TouchPadSettingMenuBox
               style={
@@ -198,6 +206,18 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
             </TouchPadSettingMenuBox>
           </Animated.View>
         </TouchPadSettingButton>
+        <TouchPadSwitchBox>
+          <TouchPadSwitchText>Drawing Mode</TouchPadSwitchText>
+          <TouchPadSwitch
+            trackColor={{ false: "#767577", true: `${colors.MAIN_COLOR}` }}
+            thumbColor={isDrawingMode ? "#767577" : `${colors.MAIN_COLOR}`}
+            ios_backgroundColor="#3e3e3e"
+            onValueChange={() =>
+              setIsDrawingMode((previousState) => !previousState)
+            }
+            value={isDrawingMode}
+          />
+        </TouchPadSwitchBox>
         <GestureDetector gesture={composedGesture}>
           <TrackPadTouchArea></TrackPadTouchArea>
         </GestureDetector>
@@ -210,7 +230,7 @@ const TouchPadContainer = styled.View`
   flex: 1;
   justify-content: center;
   align-items: center;
-  background-color: #f3eee6;
+  background-color: ${colors.BACKGROUND_COLOR};
 `;
 
 const TouchPadPreviousScreenButton = styled.TouchableOpacity`
@@ -251,12 +271,29 @@ const TouchPadSettingMenuText = styled.Text`
   font-size: 18px;
 `;
 
+const TouchPadSwitchBox = styled.View`
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  top: 45px;
+`;
+
+const TouchPadSwitchText = styled.Text`
+  font-size: 15px;
+`;
+
+const TouchPadSwitch = styled.Switch`
+  transform: translateY(-10px);
+`;
+
 const TrackPadTouchArea = styled.TouchableOpacity`
   margin-top: 15%;
   height: 80%;
   width: 90%;
   background-color: transparent;
-  border: 3px solid #7e94ae;
+  border: 3px solid ${colors.MAIN_COLOR};
   border-radius: 20px;
   opacity: 0.2;
   z-index: -1;
