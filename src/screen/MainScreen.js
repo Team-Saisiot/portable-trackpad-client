@@ -1,4 +1,5 @@
 import styled from "styled-components/native";
+import colors from "../constants/colors";
 
 const MainScreen = ({ navigation }) => {
   return (
@@ -16,7 +17,7 @@ const MainContainer = styled.View`
   flex: 1;
   justify-content: center;
   align-items: center;
-  background-color: #f3eee6;
+  background-color: ${colors.BACKGROUND_COLOR};
 `;
 
 const MainTitleText = styled.Text`
@@ -28,13 +29,13 @@ const MainLoginButton = styled.TouchableOpacity`
   align-items: center;
   margin-top: 80px;
   padding: 15px 80px;
-  background-color: #7e94ae;
+  background-color: ${colors.MAIN_COLOR};
   border-radius: 10px;
 `;
 
 const MainLoginButtonText = styled.Text`
   font-size: 20px;
-  color: #f3eee6;
+  color: ${colors.BACKGROUND_COLOR};
 `;
 
 export default MainScreen;
