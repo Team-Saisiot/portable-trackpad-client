@@ -23,6 +23,7 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   const traceGesture = useRef([]);
   const idToken = useRef(null);
   const userCustom = useRef(null);
+  const gestureFunctions = useRef([]);
 
   const socket = io(`http://${route.params.ipAddress}:${PACKAGE_SERVER_PORT}`);
 
@@ -75,7 +76,9 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
     if (event.numberOfTouches === 0) {
       socket.emit("user-send", ["click"]);
     } else if (event.numberOfTouches === 1) {
-      socket.emit("user-send", ["rightClick"]);
+      socket.emit("user-send", [
+        gestureFunctions.current.data.gesture[2].function,
+      ]);
     }
   });
 
@@ -106,9 +109,13 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
 
   fourPointPanGesture.onEnd((event) => {
     if (event.translationX > 0) {
-      socket.emit("user-send", ["goForwardInTap"]);
+      socket.emit("user-send", [
+        gestureFunctions.current.data.gesture[4].function,
+      ]);
     } else {
-      socket.emit("user-send", ["goBackInTap"]);
+      socket.emit("user-send", [
+        gestureFunctions.current.data.gesture[3].function,
+      ]);
     }
   });
 
@@ -127,17 +134,25 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
 
   twoPointPanGesture.onEnd((event) => {
     if (event.translationX < 0 && Math.abs(event.translationY) < 10) {
-      socket.emit("user-send", ["goForwardInBrowser"]);
+      socket.emit("user-send", [
+        gestureFunctions.current.data.gesture[1].function,
+      ]);
     } else if (event.translationX > 0 && Math.abs(event.translationY) < 10) {
-      socket.emit("user-send", ["goBackInBrowser"]);
+      socket.emit("user-send", [
+        gestureFunctions.current.data.gesture[0].function,
+      ]);
     }
   });
 
   rotationGesture.onUpdate((event) => {
     count++;
 
-    if (event.numberOfPointers === 3 && count > 3) {
-      socket.emit("user-send", ["volume", event.rotation]);
+    if (event.numberOfPointers === 3 && count > 4) {
+      if (event.rotation < 0) {
+        socket.emit("user-send", ["volumeUp", event.rotation]);
+      } else {
+        socket.emit("user-send", ["volumeDown", event.rotation]);
+      }
 
       count = 0;
     }
@@ -231,6 +246,12 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
           `${SERVER_PORT}/users/${
             JSON.parse(idToken.current).user.email
           }/customGesture`,
+        );
+
+        gestureFunctions.current = await axios.get(
+          `${SERVER_PORT}/users/${
+            JSON.parse(idToken.current).user.email
+          }/gestures`,
         );
       })();
       return () => {

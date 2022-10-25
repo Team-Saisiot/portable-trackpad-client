@@ -1,5 +1,5 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Alert, Animated } from "react-native";
+import { Alert, Animated, ScrollView, View } from "react-native";
 import styled from "styled-components/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SERVER_PORT } from "@env";
@@ -7,6 +7,7 @@ import React, { useRef, useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
+import COLORS from "../constants/COLORS";
 
 const EditGestureScreen = ({ navigation: { navigate }, route }) => {
   const [isSettingButtonPressed, setIsSettingButtonPressed] = useState(false);
@@ -15,49 +16,7 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
   const [animatedPosition, setAnimatedPosition] = useState("x");
   const [animatedPointer, setAnimatedPointer] = useState(2);
   const [up, setUp] = useState(false);
-  const [gestureData, setGestureData] = useState([
-    {
-      action: "2손가락 왼쪽 슬라이드",
-      function: "이전페이지로",
-      pointer: 2,
-      direction: "left",
-      position: "x",
-    },
-    {
-      action: "2손가락 오른쪽 슬라이드",
-      function: "다음페이지로",
-      pointer: 2,
-      direction: "right",
-      position: "x",
-    },
-    {
-      action: "2손가락 상하 슬라이드",
-      function: "상하 스크롤",
-      pointer: 2,
-      direction: "upDown",
-      position: "y",
-    },
-    {
-      action: "2손가락 탭",
-      function: "오른쪽 클릭",
-      pointer: 2,
-      direction: "tap",
-    },
-    {
-      action: "4손가락 왼쪽 슬라이드",
-      function: "이전 탭으로",
-      pointer: 4,
-      direction: "left",
-      position: "x",
-    },
-    {
-      action: "4손가락 오른쪽 슬라이드",
-      function: "다음 탭으로",
-      pointer: 4,
-      direction: "right",
-      position: "x",
-    },
-  ]);
+  const [gestureData, setGestureData] = useState([]);
 
   const idToken = useRef(null);
 
@@ -100,7 +59,14 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
           }/customGesture`,
         );
 
+        const userGestures = await axios.get(
+          `${SERVER_PORT}/users/${
+            JSON.parse(idToken.current).user.email
+          }/gestures`,
+        );
+
         setSelectedLanguage(customGesture.data.customGesture.function);
+        setGestureData(userGestures.data.gesture);
       })();
     }, []),
   );
@@ -178,67 +144,114 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
           <EditGestureTitleText>제스처</EditGestureTitleText>
           <EditGestureTitleText>기능</EditGestureTitleText>
         </EditGestureTitleBox>
-        {gestureData.map((value, index) => {
-          return (
-            <>
-              <EditGestureListBox key={index}>
-                <EditGestureActionBox
-                  onPress={() => {
-                    moveAnimation(value);
+        <View style={{ height: 200 }}>
+          <ScrollView>
+            {gestureData?.map((value, index) => {
+              return (
+                <>
+                  <EditGestureListBox key={index}>
+                    <EditGestureActionBox
+                      onPress={() => {
+                        moveAnimation(value);
+                      }}
+                    >
+                      <EditGestureListText>{value.action}</EditGestureListText>
+                    </EditGestureActionBox>
+                    <EditGestureFunctionBox>
+                      <Picker
+                        mode="dropdown"
+                        style={{ width: 150 }}
+                        selectedValue={value.function}
+                        dropdownIconColor="#7e94ae"
+                        onValueChange={(itemValue, itemIndex) => {
+                          setGestureData(() => {
+                            let copy = [...gestureData];
+
+                            copy[index].function = itemValue;
+
+                            axios.post(
+                              `${SERVER_PORT}/users/${
+                                JSON.parse(idToken.current).user.email
+                              }/gestures`,
+                              { updatedGesture: copy },
+                            );
+
+                            return copy;
+                          });
+                        }}
+                      >
+                        <Picker.Item label="없음" value="" />
+                        <Picker.Item
+                          label="브라우저 뒤로가기"
+                          value="goBackInBrowser"
+                        />
+                        <Picker.Item
+                          label="브라우저 앞으로가기"
+                          value="goForwardInBrowser"
+                        />
+                        <Picker.Item
+                          label="브라우저 탭 앞으로가기"
+                          value="goForwardInTap"
+                        />
+                        <Picker.Item
+                          label="브라우저 탭 뒤로가기"
+                          value="goBackInTap"
+                        />
+                        <Picker.Item label="볼륨 업" value="volumeUp" />
+                        <Picker.Item label="볼륨 다운" value="volumeDown" />
+                        <Picker.Item label="음소거" value="mute" />
+                        <Picker.Item label="재생" value="paly" />
+                        <Picker.Item label="일시정지" value="pause" />
+                      </Picker>
+                    </EditGestureFunctionBox>
+                    <Ionicons name="refresh" size={15} color="#999999" />
+                  </EditGestureListBox>
+                  <EditGestureHorizonLine />
+                </>
+              );
+            })}
+            <EditGestureListBox>
+              <EditGestureActionBox>
+                <EditGestureListText>Custom Gesture</EditGestureListText>
+              </EditGestureActionBox>
+              <EditGestureFunctionBox>
+                <Picker
+                  mode="dropdown"
+                  style={{ width: 150 }}
+                  dropdownIconColor="#7e94ae"
+                  selectedValue={selectedLanguage}
+                  onValueChange={(itemValue, itemIndex) => {
+                    setSelectedLanguage(itemValue);
                   }}
                 >
-                  <EditGestureListText>{value.action}</EditGestureListText>
-                </EditGestureActionBox>
-                <EditGestureFunctionBox>
-                  <EditGestureListText>{value.function}</EditGestureListText>
-                  <Ionicons
-                    name="caret-down-outline"
-                    size={15}
-                    color="#7e94ae"
+                  <Picker.Item label="없음" value="" />
+                  <Picker.Item
+                    label="브라우저 뒤로가기"
+                    value="goBackInBrowser"
                   />
-                </EditGestureFunctionBox>
-                <Ionicons name="refresh" size={15} color="#999999" />
-              </EditGestureListBox>
-              <EditGestureHorizonLine />
-            </>
-          );
-        })}
-        <EditGestureListBox>
-          <EditGestureActionBox>
-            <EditGestureListText>Custom Gesture</EditGestureListText>
-          </EditGestureActionBox>
-          <EditGestureFunctionBox>
-            <Picker
-              mode="dropdown"
-              style={{ width: 150 }}
-              dropdownIconColor="#7e94ae"
-              selectedValue={selectedLanguage}
-              onValueChange={async (itemValue, itemIndex) => {
-                await axios.post(
-                  `${SERVER_PORT}/users/${
-                    JSON.parse(idToken.current).user.email
-                  }/customGesture`,
-                  { function: itemValue },
-                );
-
-                setSelectedLanguage(itemValue);
-              }}
-            >
-              <Picker.Item label="없음" value="" />
-              <Picker.Item label="브라우저 뒤로가기" value="goBackInBrowser" />
-              <Picker.Item
-                label="브라우저 앞으로가기"
-                value="goForwardInBrowser"
-              />
-              <Picker.Item
-                label="브라우저 탭 앞으로가기"
-                value="goForwardInTap"
-              />
-              <Picker.Item label="브라우저 탭 뒤로가기" value="goBackInTap" />
-            </Picker>
-          </EditGestureFunctionBox>
-          <Ionicons name="refresh" size={15} color="#999999" />
-        </EditGestureListBox>
+                  <Picker.Item
+                    label="브라우저 앞으로가기"
+                    value="goForwardInBrowser"
+                  />
+                  <Picker.Item
+                    label="브라우저 탭 앞으로가기"
+                    value="goForwardInTap"
+                  />
+                  <Picker.Item
+                    label="브라우저 탭 뒤로가기"
+                    value="goBackInTap"
+                  />
+                  <Picker.Item label="볼륨 업" value="volumeUp" />
+                  <Picker.Item label="볼륨 다운" value="volumeDown" />
+                  <Picker.Item label="음소거" value="mute" />
+                  <Picker.Item label="재생" value="paly" />
+                  <Picker.Item label="일시정지" value="pause" />
+                </Picker>
+              </EditGestureFunctionBox>
+              <Ionicons name="refresh" size={15} color="#999999" />
+            </EditGestureListBox>
+          </ScrollView>
+        </View>
       </EditGestureTextBox>
     </EditGestureContainer>
   );
