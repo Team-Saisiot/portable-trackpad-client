@@ -66,19 +66,17 @@ const PcListScreen = ({ navigation }) => {
           );
 
           io(`http://${localIp[i].ip}:${PACKAGE_SERVER_PORT}`).on(
-            "broadcast",
+            "verify-connectable",
             (data) => {
               allConnectableIPs.current.push({ name: data, ip: data });
             },
           );
-
-          io(`http://${localIp[i].ip}:${PACKAGE_SERVER_PORT}`).disconnect();
         }
       })();
 
       return () => {
         for (let i = 0; i < localIp?.length; i++) {
-          io(`http://${localIp[i].ip}:${PACKAGE_SERVER_PORT}`).disconnect();
+          io(`http://${localIp[i].ip}:${PACKAGE_SERVER_PORT}`).off();
         }
       };
     }, []),

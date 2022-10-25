@@ -4,7 +4,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { io } from "socket.io-client";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { PACKAGE_SERVER_PORT } from "@env";
+import { SERVER_PORT, PACKAGE_SERVER_PORT } from "@env";
 import {
   Gesture,
   GestureDetector,
@@ -12,6 +12,7 @@ import {
 } from "react-native-gesture-handler";
 import styled from "styled-components/native";
 import colors from "../constants/colors";
+import axios from "axios";
 
 const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   const [isSettingButtonPressed, setIsSettingButtonPressed] = useState(false);
@@ -19,6 +20,7 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
 
   const xPosition = useRef(0);
   const yPosition = useRef(0);
+  const traceGesture = useRef([]);
 
   const socket = io(`http://${route.params.ipAddress}:${PACKAGE_SERVER_PORT}`);
 
@@ -26,6 +28,21 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   let zero = 0;
   let fortyFive = 0;
   let ninety = 0;
+  let traceArray = [];
+
+  const toEditGestureScreen = async () => {
+    const idToken = await AsyncStorage.getItem("idToken");
+
+    if (idToken) {
+      navigate("EditGesture", { ipAddress: route.params.ipAddress });
+    } else {
+      Alert.alert("Need Login", "로그인이 필요합니다.", [
+        {
+          text: "확인",
+        },
+      ]);
+    }
+  };
 
   const logoutAlert = async () => {
     await AsyncStorage.clear();
@@ -39,11 +56,15 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   };
 
   const panGesture = Gesture.Pan();
-  const drawingGesture = Gesture.Pan();
   const fourPointPanGesture = Gesture.Pan();
   const twoPointPanGesture = Gesture.Pan();
   const tapGesture = Gesture.Tap();
   const rotationGesture = Gesture.Rotation();
+
+  const drawingGesture = Gesture.Pan();
+  const pinchGesture = Gesture.Pinch();
+
+  const customGesture = Gesture.Pan();
 
   fourPointPanGesture.minPointers(4);
   fourPointPanGesture.maxPointers(4);
@@ -83,48 +104,6 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
     }
   });
 
-  drawingGesture.onUpdate((event) => {
-    xPosition.current = parseInt(event.absoluteX);
-    yPosition.current = parseInt(event.absoluteY);
-
-    const xtest = event.absoluteX - xPosition.current;
-    const ytest = event.absoluteY - yPosition.current;
-
-    const radian = Math.atan2(ytest, xtest);
-
-    let degree = (radian * 180) / Math.PI;
-
-    if (ytest < 0) {
-      degree += 180;
-    }
-
-    if (degree < 97 && degree > 87) {
-      ninety++;
-    } else if (degree < 47 && degree > 42) {
-      fortyFive++;
-    } else if (degree < 4) {
-      zero++;
-    }
-  });
-
-  drawingGesture.onEnd(() => {
-    if (Math.max(ninety, fortyFive, zero) === zero) {
-      if (ninety > fortyFive) {
-        socket.emit("drawing", ["circle"]);
-      } else if (ninety < fortyFive) {
-        socket.emit("drawing", ["triangle"]);
-      }
-    } else if (Math.max(ninety, fortyFive, zero) === ninety) {
-      socket.emit("drawing", ["square"]);
-    } else {
-      socket.emit("drawing", ["circle"]);
-    }
-
-    ninety = 0;
-    fortyFive = 0;
-    zero = 0;
-  });
-
   fourPointPanGesture.onEnd((event) => {
     if (event.translationX > 0) {
       socket.emit("user-send", ["goForwardInTap"]);
@@ -146,6 +125,14 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
     yPosition.current = parseInt(event.absoluteY);
   });
 
+  twoPointPanGesture.onEnd((event) => {
+    if (event.translationX < 0 && Math.abs(event.translationY) < 10) {
+      socket.emit("user-send", ["goForwardInBrowser"]);
+    } else if (event.translationX > 0 && Math.abs(event.translationY) < 10) {
+      socket.emit("user-send", ["goBackInBrowser"]);
+    }
+  });
+
   rotationGesture.onUpdate((event) => {
     count++;
 
@@ -156,20 +143,89 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
     }
   });
 
-  const composedGesture = isDrawingMode
-    ? Gesture.Race(drawingGesture)
-    : Gesture.Race(
-        fourPointPanGesture,
-        twoPointPanGesture,
-        panGesture,
-        tapGesture,
-        rotationGesture,
-      );
+  drawingGesture.onUpdate((event) => {
+    xPosition.current = parseInt(event.absoluteX);
+    yPosition.current = parseInt(event.absoluteY);
+
+    const xtest = event.absoluteX - xPosition.current;
+    const ytest = event.absoluteY - yPosition.current;
+
+    const radian = Math.atan2(ytest, xtest);
+
+    let degree = (radian * 180) / Math.PI;
+
+    if (ytest < 0) {
+      degree += 180;
+    }
+
+    if (degree < 100 && degree > 81) {
+      ninety++;
+    } else if (degree < 49 && degree > 41) {
+      fortyFive++;
+    } else if (degree < 6) {
+      zero++;
+    }
+  });
+
+  drawingGesture.onEnd(() => {
+    if (Math.max(ninety, fortyFive, zero) === zero) {
+      if (ninety > fortyFive) {
+        socket.emit("drawing", ["circle"]);
+      } else {
+        socket.emit("drawing", ["triangle"]);
+      }
+    } else if (Math.max(ninety, fortyFive, zero) === ninety) {
+      socket.emit("drawing", ["square"]);
+    } else {
+      socket.emit("drawing", ["square"]);
+    }
+
+    ninety = 0;
+    fortyFive = 0;
+    zero = 0;
+  });
+
+  customGesture.onBegin(async () => {
+    const idToken = await AsyncStorage.getItem("idToken");
+    const userCustom = await axios.get(
+      `${SERVER_PORT}/users/${JSON.parse(idToken).user.email}/gestures`,
+    );
+
+    traceGesture.current = userCustom.data.custom;
+  });
+
+  customGesture.onUpdate((event) => {
+    traceArray = [...traceGesture.current];
+
+    for (let i = 0; i < traceArray.length; i++) {
+      if (
+        event.absoluteX + 45 > traceArray[i][0] &&
+        event.absoluteX - 45 < traceArray[i][0] &&
+        event.absoluteY + 51 > traceArray[i][1] &&
+        event.absoluteY - 51 < traceArray[i][1]
+      ) {
+        traceArray.splice(1, i);
+      }
+    }
+  });
+
+  customGesture.onEnd(() => {
+    traceArray.length = 0;
+  });
+
+  const composedDrawingGesture = Gesture.Race(pinchGesture, drawingGesture);
+
+  const composedGeneralGesture = Gesture.Simultaneous(
+    Gesture.Race(panGesture, tapGesture, rotationGesture),
+    fourPointPanGesture,
+    twoPointPanGesture,
+    customGesture,
+  );
 
   useFocusEffect(
     React.useCallback(() => {
       return () => {
-        socket.disconnect();
+        socket.off();
       };
     }, []),
   );
@@ -192,10 +248,16 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
                   : { display: "none", transform: [{ translateY: -80 }] }
               }
             >
-              <TouchPadSettingMenuTextBox>
+              <TouchPadSettingMenuTextBox onPress={toEditGestureScreen}>
                 <TouchPadSettingMenuText>제스처 편집</TouchPadSettingMenuText>
               </TouchPadSettingMenuTextBox>
-              <TouchPadSettingMenuTextBox>
+              <TouchPadSettingMenuTextBox
+                onPress={() =>
+                  navigate("PopularGesture", {
+                    ipAddress: route.params.ipAddress,
+                  })
+                }
+              >
                 <TouchPadSettingMenuText>
                   자주 사용하는 제스처
                 </TouchPadSettingMenuText>
@@ -207,7 +269,9 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
           </Animated.View>
         </TouchPadSettingButton>
         <TouchPadSwitchBox>
-          <TouchPadSwitchText>Drawing Mode</TouchPadSwitchText>
+          <TouchPadSwitchText>
+            {isDrawingMode ? "Drawing Mode" : "General Mode"}
+          </TouchPadSwitchText>
           <TouchPadSwitch
             trackColor={{ false: "#767577", true: `${colors.MAIN_COLOR}` }}
             thumbColor={isDrawingMode ? "#767577" : `${colors.MAIN_COLOR}`}
@@ -218,8 +282,21 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
             value={isDrawingMode}
           />
         </TouchPadSwitchBox>
-        <GestureDetector gesture={composedGesture}>
-          <TrackPadTouchArea></TrackPadTouchArea>
+        <GestureDetector
+          gesture={composedDrawingGesture}
+          style={{ display: isDrawingMode ? "flex" : "none" }}
+        >
+          <TrackPadTouchArea
+            style={{ display: isDrawingMode ? "flex" : "none" }}
+          ></TrackPadTouchArea>
+        </GestureDetector>
+        <GestureDetector
+          gesture={composedGeneralGesture}
+          style={{ display: !isDrawingMode ? "flex" : "none" }}
+        >
+          <TrackPadTouchArea
+            style={{ display: !isDrawingMode ? "flex" : "none" }}
+          ></TrackPadTouchArea>
         </GestureDetector>
       </TouchPadContainer>
     </GestureHandlerRootView>
