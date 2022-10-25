@@ -19,13 +19,16 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
 
   const xPosition = useRef(0);
   const yPosition = useRef(0);
+  const startXPosition = useRef(0);
+  const startYPosition = useRef(0);
+  const prevXPosition = useRef(0);
+  const prevYPosition = useRef(0);
 
   const socket = io(`http://${route.params.ipAddress}:${PACKAGE_SERVER_PORT}`);
 
-  let count = 0;
-  let zero = 0;
-  let fortyFive = 0;
-  let ninety = 0;
+  let rotateCount = 0;
+  let prevAngle = -1;
+  let cornerCount = 0;
 
   const logoutAlert = async () => {
     await AsyncStorage.clear();
@@ -83,46 +86,59 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
     }
   });
 
+  drawingGesture.onStart((event) => {
+    startXPosition.current = event.absoluteX;
+    startYPosition.current = event.absoluteY;
+    prevXPosition.current = startXPosition.current;
+    prevYPosition.current = startYPosition.current;
+  });
+
   drawingGesture.onUpdate((event) => {
-    xPosition.current = parseInt(event.absoluteX);
-    yPosition.current = parseInt(event.absoluteY);
+    const changeX = prevXPosition.current - event.absoluteX;
+    const changeY = prevYPosition.current - event.absoluteY;
 
-    const xtest = event.absoluteX - xPosition.current;
-    const ytest = event.absoluteY - yPosition.current;
+    if (Math.abs(changeX) > 50 || Math.abs(changeY) > 50) {
+      prevXPosition.current = event.absoluteX;
+      prevYPosition.current = event.absoluteY;
+      const radian = Math.atan2(changeY, changeX);
+      const degree = (radian * 180) / Math.PI;
 
-    const radian = Math.atan2(ytest, xtest);
+      if (prevAngle !== -1) {
+        let angleChange = Math.abs(prevAngle - degree);
+        angleChange = angleChange > 180 ? 360 - angleChange : angleChange;
 
-    let degree = (radian * 180) / Math.PI;
+        if (angleChange > 50) {
+          cornerCount++;
+        }
+      }
 
-    if (ytest < 0) {
-      degree += 180;
-    }
-
-    if (degree < 97 && degree > 87) {
-      ninety++;
-    } else if (degree < 47 && degree > 42) {
-      fortyFive++;
-    } else if (degree < 4) {
-      zero++;
+      prevAngle = degree;
     }
   });
 
-  drawingGesture.onEnd(() => {
-    if (Math.max(ninety, fortyFive, zero) === zero) {
-      if (ninety > fortyFive) {
-        socket.emit("drawing", ["circle"]);
-      } else if (ninety < fortyFive) {
-        socket.emit("drawing", ["triangle"]);
-      }
-    } else if (Math.max(ninety, fortyFive, zero) === ninety) {
+  drawingGesture.onEnd((event) => {
+    let distanceX = startXPosition.current - event.absoluteX;
+    let distanceY = startYPosition.current - event.absoluteY;
+    startXPosition.current;
+    startYPosition.current;
+
+    if (Math.abs(distanceX) > 80 || Math.abs(distanceY) > 80) {
+      cornerCount = 0;
+      prevAngle = -1;
+
+      return;
+    }
+
+    if (cornerCount === 3) {
       socket.emit("drawing", ["square"]);
+    } else if (cornerCount === 2) {
+      socket.emit("drawing", ["triangle"]);
     } else {
       socket.emit("drawing", ["circle"]);
     }
 
-    ninety = 0;
-    fortyFive = 0;
-    zero = 0;
+    cornerCount = 0;
+    prevAngle = -1;
   });
 
   fourPointPanGesture.onEnd((event) => {
@@ -147,12 +163,12 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   });
 
   rotationGesture.onUpdate((event) => {
-    count++;
+    rotateCount++;
 
-    if (event.numberOfPointers === 3 && count > 3) {
+    if (event.numberOfPointers === 3 && rotateCount > 3) {
       socket.emit("user-send", ["volume", event.rotation]);
 
-      count = 0;
+      rotateCount = 0;
     }
   });
 
