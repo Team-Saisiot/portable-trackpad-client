@@ -172,35 +172,6 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
             </>
           );
         })}
-        <EditGestureListBox>
-          <EditGestureActionBox>
-            <EditGestureListText>Custom Gesture</EditGestureListText>
-          </EditGestureActionBox>
-          <EditGestureFunctionBox>
-            <Picker style={{ height: 50, width: 150 }}>
-              <Picker.Item label="브라우저 뒤로가기" value="goBackInBrowser" />
-              <Picker.Item
-                label="브라우저 앞으로가기"
-                value="goForwardInBrowser"
-              />
-              <Picker.Item
-                label="브라우저 탭 앞으로가기"
-                value="goForwardInTap"
-              />
-              <Picker.Item label="브라우저 탭 뒤로가기" value="goBackInTap" />
-              <Picker.Item label="홈페이지 열기" value="home" />
-              <Picker.Item label="볼륨 업" value="volume" />
-              <Picker.Item label="볼륨 다운" value="volume" />
-              <Picker.Item label="음소거" value="mute" />
-              <Picker.Item label="스크린샷" value="screenShot" />
-              <Picker.Item label="재생" value="play" />
-              <Picker.Item label="정지" value="pause" />
-            </Picker>
-            <Ionicons name="caret-down-outline" size={15} color="#7e94ae" />
-          </EditGestureFunctionBox>
-          <Ionicons name="refresh" size={15} color="#999999" />
-        </EditGestureListBox>
-        <EditGestureHorizonLine />
       </EditGestureTextBox>
     </EditGestureContainer>
   );
