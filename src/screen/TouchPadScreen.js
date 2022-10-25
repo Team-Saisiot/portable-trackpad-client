@@ -209,7 +209,16 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
     }
   });
 
-  customGesture.onEnd(() => {
+  customGesture.onEnd(async () => {
+    if (traceArray.length < 4) {
+      const idToken = await AsyncStorage.getItem("idToken");
+      const userCustom = await axios.get(
+        `${SERVER_PORT}/users/${JSON.parse(idToken).user.email}/gestures`,
+      );
+
+      socket.emit("user-send", [userCustom.data.customFunction]);
+    }
+
     traceArray.length = 0;
   });
 

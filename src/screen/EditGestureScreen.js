@@ -1,11 +1,15 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Alert, Animated, TouchableOpacity, Easing } from "react-native";
+import { Alert, Animated } from "react-native";
 import styled from "styled-components/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRef, useState } from "react";
+import { SERVER_PORT } from "@env";
+import { useState } from "react";
+import { Picker } from "@react-native-picker/picker";
+import axios from "axios";
 
 const EditGestureScreen = ({ navigation: { navigate }, route }) => {
   const [isSettingButtonPressed, setIsSettingButtonPressed] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState("Java");
   const [startPosition, setStartPosition] = useState(-50);
   const [animatedPosition, setAnimatedPosition] = useState("x");
   const [animatedPointer, setAnimatedPointer] = useState(2);
@@ -172,6 +176,49 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
             </>
           );
         })}
+        <EditGestureListBox>
+          <EditGestureActionBox>
+            <EditGestureListText>Custom Gesture</EditGestureListText>
+          </EditGestureActionBox>
+          <EditGestureFunctionBox>
+            <Picker
+              mode="dropdown"
+              style={{ width: 150 }}
+              dropdownIconColor="#7e94ae"
+              selectedValue={selectedLanguage}
+              onValueChange={async (itemValue, itemIndex) => {
+                console.log("onValueChange={ ~ itemValue", itemValue);
+
+                const idToken = await AsyncStorage.getItem("idToken");
+
+                await axios.patch(
+                  `${SERVER_PORT}/users/${
+                    JSON.parse(idToken).user.email
+                  }/custom`,
+                  { customFunction: itemValue },
+                );
+
+                setSelectedLanguage(itemValue);
+              }}
+            >
+              <Picker.Item label="없음" value="" />
+              <Picker.Item
+                label="브라우저 뒤로가기"
+                value="goForwardInBrowser"
+              />
+              <Picker.Item
+                label="브라우저 앞으로가기"
+                value="goBackInBrowser"
+              />
+              <Picker.Item
+                label="브라우저 탭 앞으로가기"
+                value="goForwardInTap"
+              />
+              <Picker.Item label="브라우저 탭 뒤로가기" value="goBackInTap" />
+            </Picker>
+          </EditGestureFunctionBox>
+          <Ionicons name="refresh" size={15} color="#999999" />
+        </EditGestureListBox>
       </EditGestureTextBox>
     </EditGestureContainer>
   );
