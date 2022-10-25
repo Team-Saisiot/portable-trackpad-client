@@ -11,7 +11,7 @@ import {
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import styled from "styled-components/native";
-import colors from "../constants/colors";
+import COLORS from "../constants/COLORS";
 import axios from "axios";
 
 const TouchPadScreen = ({ navigation: { navigate }, route }) => {
@@ -21,6 +21,8 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   const xPosition = useRef(0);
   const yPosition = useRef(0);
   const traceGesture = useRef([]);
+  const idToken = useRef(null);
+  const userCustom = useRef(null);
 
   const socket = io(`http://${route.params.ipAddress}:${PACKAGE_SERVER_PORT}`);
 
@@ -31,9 +33,7 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   let traceArray = [];
 
   const toEditGestureScreen = async () => {
-    const idToken = await AsyncStorage.getItem("idToken");
-
-    if (idToken) {
+    if (idToken.current) {
       navigate("EditGesture", { ipAddress: route.params.ipAddress });
     } else {
       Alert.alert("Need Login", "로그인이 필요합니다.", [
@@ -147,14 +147,14 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
     xPosition.current = parseInt(event.absoluteX);
     yPosition.current = parseInt(event.absoluteY);
 
-    const xtest = event.absoluteX - xPosition.current;
-    const ytest = event.absoluteY - yPosition.current;
+    const xMovement = event.absoluteX - xPosition.current;
+    const yMovement = event.absoluteY - yPosition.current;
 
-    const radian = Math.atan2(ytest, xtest);
+    const radian = Math.atan2(yMovement, xMovement);
 
     let degree = (radian * 180) / Math.PI;
 
-    if (ytest < 0) {
+    if (yMovement < 0) {
       degree += 180;
     }
 
@@ -186,12 +186,7 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   });
 
   customGesture.onBegin(async () => {
-    const idToken = await AsyncStorage.getItem("idToken");
-    const userCustom = await axios.get(
-      `${SERVER_PORT}/users/${JSON.parse(idToken).user.email}/gestures`,
-    );
-
-    traceGesture.current = userCustom.data.custom;
+    traceGesture.current = userCustom.current.data.customGesture.path;
   });
 
   customGesture.onUpdate((event) => {
@@ -211,12 +206,9 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
 
   customGesture.onEnd(async () => {
     if (traceArray.length < 4) {
-      const idToken = await AsyncStorage.getItem("idToken");
-      const userCustom = await axios.get(
-        `${SERVER_PORT}/users/${JSON.parse(idToken).user.email}/gestures`,
-      );
-
-      socket.emit("user-send", [userCustom.data.customFunction]);
+      socket.emit("user-send", [
+        userCustom.current.data.customGesture.function,
+      ]);
     }
 
     traceArray.length = 0;
@@ -233,6 +225,14 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
 
   useFocusEffect(
     React.useCallback(() => {
+      (async () => {
+        idToken.current = await AsyncStorage.getItem("idToken");
+        userCustom.current = await axios.get(
+          `${SERVER_PORT}/users/${
+            JSON.parse(idToken.current).user.email
+          }/customGesture`,
+        );
+      })();
       return () => {
         socket.off();
       };
@@ -243,12 +243,12 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <TouchPadContainer>
         <TouchPadPreviousScreenButton onPress={() => navigate("PcList")}>
-          <Ionicons name="arrow-back" size={32} color={colors.MAIN_COLOR} />
+          <Ionicons name="arrow-back" size={32} color={COLORS.MAIN_COLOR} />
         </TouchPadPreviousScreenButton>
         <TouchPadSettingButton
           onPress={() => setIsSettingButtonPressed(!isSettingButtonPressed)}
         >
-          <Ionicons name="settings" size={24} color={colors.MAIN_COLOR} />
+          <Ionicons name="settings" size={24} color={COLORS.MAIN_COLOR} />
           <Animated.View>
             <TouchPadSettingMenuBox
               style={
@@ -282,8 +282,8 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
             {isDrawingMode ? "Drawing Mode" : "General Mode"}
           </TouchPadSwitchText>
           <TouchPadSwitch
-            trackColor={{ false: "#767577", true: `${colors.MAIN_COLOR}` }}
-            thumbColor={isDrawingMode ? "#767577" : `${colors.MAIN_COLOR}`}
+            trackColor={{ false: "#767577", true: `${COLORS.MAIN_COLOR}` }}
+            thumbColor={isDrawingMode ? "#767577" : `${COLORS.MAIN_COLOR}`}
             ios_backgroundColor="#3e3e3e"
             onValueChange={() =>
               setIsDrawingMode((previousState) => !previousState)
@@ -316,7 +316,7 @@ const TouchPadContainer = styled.View`
   flex: 1;
   justify-content: center;
   align-items: center;
-  background-color: ${colors.BACKGROUND_COLOR};
+  background-color: ${COLORS.BACKGROUND_COLOR};
 `;
 
 const TouchPadPreviousScreenButton = styled.TouchableOpacity`
@@ -379,7 +379,7 @@ const TrackPadTouchArea = styled.TouchableOpacity`
   height: 80%;
   width: 90%;
   background-color: transparent;
-  border: 3px solid ${colors.MAIN_COLOR};
+  border: 3px solid ${COLORS.MAIN_COLOR};
   border-radius: 20px;
   opacity: 0.2;
   z-index: -1;

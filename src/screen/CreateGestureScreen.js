@@ -9,19 +9,20 @@ import {
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import styled from "styled-components/native";
-import colors from "../constants/colors";
+import COLORS from "../constants/COLORS";
 import axios from "axios";
+import { useFocusEffect } from "@react-navigation/native";
 
 const CreateGestureScreen = ({ navigation: { navigate }, route }) => {
   const [isSettingButtonPressed, setIsSettingButtonPressed] = useState(false);
   const [isCreateMode, setIsCreateMode] = useState(false);
 
   const traceGesture = useRef([]);
+  const idToken = useRef(null);
+  const userCustom = useRef(null);
 
   const toEditGestureScreen = async () => {
-    const idToken = await AsyncStorage.getItem("idToken");
-
-    if (idToken) {
+    if (idToken.current) {
       navigate("EditGesture", { ipAddress: route.params.ipAddress });
     } else {
       Alert.alert("Need Login", "로그인이 필요합니다.", [
@@ -64,11 +65,11 @@ const CreateGestureScreen = ({ navigation: { navigate }, route }) => {
   });
 
   createGesture.onEnd(async () => {
-    const idToken = await AsyncStorage.getItem("idToken");
-
-    await axios.patch(
-      `${SERVER_PORT}/users/${JSON.parse(idToken).user.email}/gestures`,
-      { customGesture: traceGesture.current },
+    await axios.post(
+      `${SERVER_PORT}/users/${
+        JSON.parse(idToken.current).user.email
+      }/customGesture`,
+      { path: traceGesture.current },
     );
 
     Alert.alert(
@@ -83,12 +84,7 @@ const CreateGestureScreen = ({ navigation: { navigate }, route }) => {
   });
 
   drawingGesture.onStart(async () => {
-    const idToken = await AsyncStorage.getItem("idToken");
-    const customGesture = await axios.get(
-      `${SERVER_PORT}/users/${JSON.parse(idToken).user.email}/gestures`,
-    );
-
-    traceGesture.current = customGesture.data.custom;
+    traceGesture.current = userCustom.current.data.customGesture.path;
   });
 
   drawingGesture.onUpdate((event) => {
@@ -132,6 +128,20 @@ const CreateGestureScreen = ({ navigation: { navigate }, route }) => {
     ? Gesture.Race(createGesture)
     : Gesture.Race(drawingGesture);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      (async () => {
+        idToken.current = await AsyncStorage.getItem("idToken");
+
+        userCustom.current = await axios.get(
+          `${SERVER_PORT}/users/${
+            JSON.parse(idToken.current).user.email
+          }/customGesture`,
+        );
+      })();
+    }, []),
+  );
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <TouchPadContainer>
@@ -142,12 +152,12 @@ const CreateGestureScreen = ({ navigation: { navigate }, route }) => {
             })
           }
         >
-          <Ionicons name="arrow-back" size={32} color={colors.MAIN_COLOR} />
+          <Ionicons name="arrow-back" size={32} color={COLORS.MAIN_COLOR} />
         </TouchPadPreviousScreenButton>
         <TouchPadSettingButton
           onPress={() => setIsSettingButtonPressed(!isSettingButtonPressed)}
         >
-          <Ionicons name="settings" size={24} color={colors.MAIN_COLOR} />
+          <Ionicons name="settings" size={24} color={COLORS.MAIN_COLOR} />
           <Animated.View>
             <TouchPadSettingMenuBox
               style={
@@ -181,8 +191,8 @@ const CreateGestureScreen = ({ navigation: { navigate }, route }) => {
             {isCreateMode ? "Create Gesture Mode" : "Gesture Test Mode"}
           </TouchPadSwitchText>
           <TouchPadSwitch
-            trackColor={{ false: "#767577", true: `${colors.MAIN_COLOR}` }}
-            thumbColor={isCreateMode ? "#767577" : `${colors.MAIN_COLOR}`}
+            trackColor={{ false: "#767577", true: `${COLORS.MAIN_COLOR}` }}
+            thumbColor={isCreateMode ? "#767577" : `${COLORS.MAIN_COLOR}`}
             ios_backgroundColor="#3e3e3e"
             onValueChange={() =>
               setIsCreateMode((previousState) => !previousState)
@@ -202,7 +212,7 @@ const TouchPadContainer = styled.View`
   flex: 1;
   justify-content: center;
   align-items: center;
-  background-color: ${colors.BACKGROUND_COLOR};
+  background-color: ${COLORS.BACKGROUND_COLOR};
 `;
 
 const TouchPadPreviousScreenButton = styled.TouchableOpacity`
@@ -265,7 +275,7 @@ const TrackPadTouchArea = styled.TouchableOpacity`
   height: 80%;
   width: 90%;
   background-color: transparent;
-  border: 3px solid ${colors.MAIN_COLOR};
+  border: 3px solid ${COLORS.MAIN_COLOR};
   border-radius: 20px;
   opacity: 0.2;
   z-index: -1;

@@ -3,13 +3,14 @@ import { Alert, Animated } from "react-native";
 import styled from "styled-components/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SERVER_PORT } from "@env";
-import { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
+import { useFocusEffect } from "@react-navigation/native";
 
 const EditGestureScreen = ({ navigation: { navigate }, route }) => {
   const [isSettingButtonPressed, setIsSettingButtonPressed] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState("Java");
+  const [selectedLanguage, setSelectedLanguage] = useState("");
   const [startPosition, setStartPosition] = useState(-50);
   const [animatedPosition, setAnimatedPosition] = useState("x");
   const [animatedPointer, setAnimatedPointer] = useState(2);
@@ -43,17 +44,27 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
       direction: "tap",
     },
     {
-      action: "3손가락 드래그",
-      function: "드래그",
-      pointer: 3,
-      direction: "move",
+      action: "4손가락 왼쪽 슬라이드",
+      function: "이전 탭으로",
+      pointer: 4,
+      direction: "left",
+      position: "x",
+    },
+    {
+      action: "4손가락 오른쪽 슬라이드",
+      function: "다음 탭으로",
+      pointer: 4,
+      direction: "right",
+      position: "x",
     },
   ]);
+
+  const idToken = useRef(null);
 
   const AnimatedBox = Animated.createAnimatedComponent(Box);
   const X = new Animated.Value(startPosition);
 
-  const moveUp = (gesture) => {
+  const moveAnimation = (gesture) => {
     setStartPosition(gesture.direction === "right" ? -50 : 50);
     setAnimatedPosition(gesture.position);
     setAnimatedPointer(gesture.pointer);
@@ -77,6 +88,22 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
       },
     ]);
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      (async () => {
+        idToken.current = await AsyncStorage.getItem("idToken");
+
+        const customGesture = await axios.get(
+          `${SERVER_PORT}/users/${
+            JSON.parse(idToken.current).user.email
+          }/customGesture`,
+        );
+
+        setSelectedLanguage(customGesture.data.customGesture.function);
+      })();
+    }, []),
+  );
 
   return (
     <EditGestureContainer>
@@ -157,7 +184,7 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
               <EditGestureListBox key={index}>
                 <EditGestureActionBox
                   onPress={() => {
-                    moveUp(value);
+                    moveAnimation(value);
                   }}
                 >
                   <EditGestureListText>{value.action}</EditGestureListText>
@@ -187,28 +214,21 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
               dropdownIconColor="#7e94ae"
               selectedValue={selectedLanguage}
               onValueChange={async (itemValue, itemIndex) => {
-                console.log("onValueChange={ ~ itemValue", itemValue);
-
-                const idToken = await AsyncStorage.getItem("idToken");
-
-                await axios.patch(
+                await axios.post(
                   `${SERVER_PORT}/users/${
-                    JSON.parse(idToken).user.email
-                  }/custom`,
-                  { customFunction: itemValue },
+                    JSON.parse(idToken.current).user.email
+                  }/customGesture`,
+                  { function: itemValue },
                 );
 
                 setSelectedLanguage(itemValue);
               }}
             >
               <Picker.Item label="없음" value="" />
-              <Picker.Item
-                label="브라우저 뒤로가기"
-                value="goForwardInBrowser"
-              />
+              <Picker.Item label="브라우저 뒤로가기" value="goBackInBrowser" />
               <Picker.Item
                 label="브라우저 앞으로가기"
-                value="goBackInBrowser"
+                value="goForwardInBrowser"
               />
               <Picker.Item
                 label="브라우저 탭 앞으로가기"
@@ -251,7 +271,7 @@ const EditGestureAnimationBox = styled.View`
 `;
 
 const Box = styled.View`
-  margin: 20px 20px;
+  margin: 15px 15px;
   width: 30px;
   height: 30px;
   background-color: #7e94ae;
