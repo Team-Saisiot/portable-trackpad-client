@@ -42,16 +42,19 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   };
 
   const panGesture = Gesture.Pan();
-  const drawingGesture = Gesture.Pan();
   const fourPointPanGesture = Gesture.Pan();
   const twoPointPanGesture = Gesture.Pan();
   const tapGesture = Gesture.Tap();
   const rotationGesture = Gesture.Rotation();
+  const drawingGesture = Gesture.Pan();
+  const pinchGesture = Gesture.Pinch();
 
   fourPointPanGesture.minPointers(4);
   fourPointPanGesture.maxPointers(4);
   twoPointPanGesture.minPointers(2);
   twoPointPanGesture.maxPointers(2);
+  drawingGesture.maxPointers(2);
+  drawingGesture.minPointers(1);
 
   tapGesture.onTouchesUp((event) => {
     if (event.numberOfTouches === 0) {
@@ -172,8 +175,16 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
     }
   });
 
+  pinchGesture.onUpdate((event) => {
+    if (event.scale > 1) {
+      socket.emit("drawing", ["scaleUp"]);
+    } else {
+      socket.emit("drawing", ["scaleDown"]);
+    }
+  });
+
   const composedGesture = isDrawingMode
-    ? Gesture.Race(drawingGesture)
+    ? Gesture.Simultaneous(pinchGesture, drawingGesture)
     : Gesture.Race(
         fourPointPanGesture,
         twoPointPanGesture,
