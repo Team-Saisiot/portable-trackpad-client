@@ -20,6 +20,10 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
 
   const xPosition = useRef(0);
   const yPosition = useRef(0);
+  const startXPosition = useRef(0);
+  const startYPosition = useRef(0);
+  const prevXPosition = useRef(0);
+  const prevYPosition = useRef(0);
   const traceGesture = useRef([]);
   const idToken = useRef(null);
   const userCustom = useRef(null);
@@ -27,10 +31,9 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
 
   const socket = io(`http://${route.params.ipAddress}:${PACKAGE_SERVER_PORT}`);
 
-  let count = 0;
-  let zero = 0;
-  let fortyFive = 0;
-  let ninety = 0;
+  let rotateCount = 0;
+  let prevAngle = -1;
+  let cornerCount = 0;
   let traceArray = [];
 
   const toEditGestureScreen = async () => {
@@ -71,6 +74,9 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   fourPointPanGesture.maxPointers(4);
   twoPointPanGesture.minPointers(2);
   twoPointPanGesture.maxPointers(2);
+
+  drawingGesture.maxPointers(2);
+  drawingGesture.minPointers(1);
 
   tapGesture.onTouchesUp((event) => {
     if (event.numberOfTouches === 0) {
@@ -145,59 +151,75 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   });
 
   rotationGesture.onUpdate((event) => {
-    count++;
+    rotateCount++;
 
-    if (event.numberOfPointers === 3 && count > 4) {
+    if (event.numberOfPointers === 3 && rotateCount > 4) {
       if (event.rotation < 0) {
         socket.emit("user-send", ["volumeUp", event.rotation]);
       } else {
         socket.emit("user-send", ["volumeDown", event.rotation]);
       }
 
-      count = 0;
+      rotateCount = 0;
     }
+  });
+
+  drawingGesture.onStart((event) => {
+    startXPosition.current = event.absoluteX;
+    startYPosition.current = event.absoluteY;
+    prevXPosition.current = startXPosition.current;
+    prevYPosition.current = startYPosition.current;
   });
 
   drawingGesture.onUpdate((event) => {
-    xPosition.current = parseInt(event.absoluteX);
-    yPosition.current = parseInt(event.absoluteY);
+    const changeX = prevXPosition.current - event.absoluteX;
+    const changeY = prevYPosition.current - event.absoluteY;
 
-    const xMovement = event.absoluteX - xPosition.current;
-    const yMovement = event.absoluteY - yPosition.current;
+    if (Math.abs(changeX) > 50 || Math.abs(changeY) > 50) {
+      const radian = Math.atan2(changeY, changeX);
+      const degree = (radian * 180) / Math.PI;
 
-    const radian = Math.atan2(yMovement, xMovement);
+      prevXPosition.current = event.absoluteX;
+      prevYPosition.current = event.absoluteY;
 
-    let degree = (radian * 180) / Math.PI;
+      if (prevAngle !== -1) {
+        let angleChange = Math.abs(prevAngle - degree);
 
-    if (yMovement < 0) {
-      degree += 180;
-    }
+        angleChange = angleChange > 180 ? 360 - angleChange : angleChange;
 
-    if (degree < 100 && degree > 81) {
-      ninety++;
-    } else if (degree < 49 && degree > 41) {
-      fortyFive++;
-    } else if (degree < 6) {
-      zero++;
+        if (angleChange > 50) {
+          cornerCount++;
+        }
+      }
+
+      prevAngle = degree;
     }
   });
 
-  drawingGesture.onEnd(() => {
-    if (Math.max(ninety, fortyFive, zero) === zero) {
-      if (ninety > fortyFive) {
-        socket.emit("drawing", ["circle"]);
-      } else {
-        socket.emit("drawing", ["triangle"]);
-      }
-    } else if (Math.max(ninety, fortyFive, zero) === ninety) {
-      socket.emit("drawing", ["square"]);
-    } else {
-      socket.emit("drawing", ["square"]);
+  drawingGesture.onEnd((event) => {
+    let distanceX = startXPosition.current - event.absoluteX;
+    let distanceY = startYPosition.current - event.absoluteY;
+
+    startXPosition.current;
+    startYPosition.current;
+
+    if (Math.abs(distanceX) > 80 || Math.abs(distanceY) > 80) {
+      cornerCount = 0;
+      prevAngle = -1;
+
+      return;
     }
 
-    ninety = 0;
-    fortyFive = 0;
-    zero = 0;
+    if (cornerCount === 3) {
+      socket.emit("drawing", ["square"]);
+    } else if (cornerCount === 2) {
+      socket.emit("drawing", ["triangle"]);
+    } else {
+      socket.emit("drawing", ["circle"]);
+    }
+
+    cornerCount = 0;
+    prevAngle = -1;
   });
 
   customGesture.onBegin(async () => {
@@ -227,6 +249,14 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
     }
 
     traceArray.length = 0;
+  });
+
+  pinchGesture.onUpdate((event) => {
+    if (event.scale > 1) {
+      socket.emit("drawing", ["scaleUp"]);
+    } else {
+      socket.emit("drawing", ["scaleDown"]);
+    }
   });
 
   const composedDrawingGesture = Gesture.Race(pinchGesture, drawingGesture);
