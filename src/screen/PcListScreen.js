@@ -66,7 +66,7 @@ const PcListScreen = ({ navigation }) => {
           );
 
           io(`http://${localIp[i].ip}:${PACKAGE_SERVER_PORT}`).on(
-            "broadcast",
+            "verify-connectable",
             (data) => {
               allConnectableIPs.current.push({ name: data, ip: data });
             },
