@@ -18,7 +18,7 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
   const [up, setUp] = useState(false);
   const [gestureData, setGestureData] = useState([]);
 
-  const idToken = useRef(null);
+  const token = useRef(null);
 
   const AnimatedBox = Animated.createAnimatedComponent(Box);
   const X = new Animated.Value(startPosition);
@@ -51,18 +51,29 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
   useFocusEffect(
     React.useCallback(() => {
       (async () => {
-        idToken.current = await AsyncStorage.getItem("idToken");
+        token.current = await AsyncStorage.getItem("idToken");
+        const idToken = await AsyncStorage.getItem("idToken");
 
         const customGesture = await axios.get(
           `${SERVER_PORT}/users/${
-            JSON.parse(idToken.current).user.email
+            JSON.parse(token.current).user.email
           }/customGesture`,
+          {
+            headers: {
+              idToken: idToken,
+            },
+          },
         );
 
         const userGestures = await axios.get(
           `${SERVER_PORT}/users/${
-            JSON.parse(idToken.current).user.email
+            JSON.parse(token.current).user.email
           }/gestures`,
+          {
+            headers: {
+              idToken: idToken,
+            },
+          },
         );
 
         setSelectedLanguage(customGesture.data.customGesture.function);

@@ -51,12 +51,21 @@ const PcListScreen = ({ navigation }) => {
         const idToken = await AsyncStorage.getItem("idToken");
         const recentPcData = await axios.get(
           `${SERVER_PORT}/users/${JSON.parse(idToken).user.email}/pc`,
-          { params },
+          {
+            params,
+            headers: {
+              idToken: idToken,
+            },
+          },
         );
 
         setRecentPc(() => recentPcData.data.recentPc);
 
-        const connectableIpData = await axios.get(`${SERVER_PORT}/localIps/`);
+        const connectableIpData = await axios.get(`${SERVER_PORT}/localIps/`, {
+          headers: {
+            idToken: idToken,
+          },
+        });
 
         localIp = connectableIpData.data.localIpAddress;
 

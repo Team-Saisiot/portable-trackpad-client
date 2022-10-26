@@ -18,11 +18,11 @@ const CreateGestureScreen = ({ navigation: { navigate }, route }) => {
   const [isCreateMode, setIsCreateMode] = useState(false);
 
   const traceGesture = useRef([]);
-  const idToken = useRef(null);
+  const token = useRef(null);
   const userCustom = useRef(null);
 
   const toEditGestureScreen = async () => {
-    if (idToken.current) {
+    if (token.current) {
       navigate("EditGesture", { ipAddress: route.params.ipAddress });
     } else {
       Alert.alert("Need Login", "로그인이 필요합니다.", [
@@ -65,11 +65,20 @@ const CreateGestureScreen = ({ navigation: { navigate }, route }) => {
   });
 
   createGesture.onEnd(async () => {
+    const idToken = await AsyncStorage.getItem("idToken");
+
     await axios.post(
       `${SERVER_PORT}/users/${
         JSON.parse(idToken.current).user.email
       }/customGesture`,
-      { path: traceGesture.current },
+      {
+        path: traceGesture.current,
+      },
+      {
+        headers: {
+          idToken: idToken,
+        },
+      },
     );
 
     Alert.alert(
@@ -131,12 +140,18 @@ const CreateGestureScreen = ({ navigation: { navigate }, route }) => {
   useFocusEffect(
     React.useCallback(() => {
       (async () => {
-        idToken.current = await AsyncStorage.getItem("idToken");
+        token.current = await AsyncStorage.getItem("idToken");
+        const idToken = await AsyncStorage.getItem("idToken");
 
         userCustom.current = await axios.get(
           `${SERVER_PORT}/users/${
-            JSON.parse(idToken.current).user.email
+            JSON.parse(token.current).user.email
           }/customGesture`,
+          {
+            headers: {
+              idToken: idToken,
+            },
+          },
         );
       })();
     }, []),
