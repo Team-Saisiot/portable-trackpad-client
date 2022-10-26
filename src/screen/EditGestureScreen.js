@@ -221,6 +221,13 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
                   dropdownIconColor="#7e94ae"
                   selectedValue={selectedLanguage}
                   onValueChange={(itemValue, itemIndex) => {
+                    axios.post(
+                      `${SERVER_PORT}/users/${
+                        JSON.parse(idToken.current).user.email
+                      }/customGesture`,
+                      { function: itemValue },
+                    );
+
                     setSelectedLanguage(itemValue);
                   }}
                 >
