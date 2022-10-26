@@ -2,7 +2,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { Alert } from "react-native";
 import styled from "styled-components/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import colors from "../constants/colors";
+import COLORS from "../constants/COLORS";
 
 const NetworkGuideScreen = ({ navigation }) => {
   const toNextScreen = async () => {
@@ -24,9 +24,9 @@ const NetworkGuideScreen = ({ navigation }) => {
       <NetworkGuidePreviousScreenButton
         onPress={() => navigation.navigate("DownloadGuide")}
       >
-        <Ionicons name="arrow-back" size={32} color={colors.MAIN_COLOR} />
+        <Ionicons name="arrow-back" size={32} color={COLORS.MAIN_COLOR} />
       </NetworkGuidePreviousScreenButton>
-      <Ionicons name="wifi" size={150} color={colors.MAIN_COLOR} />
+      <Ionicons name="wifi" size={150} color={COLORS.MAIN_COLOR} />
       <NetworkGuideTextBox>
         <NetworkGuideText>본 어플리케이션은</NetworkGuideText>
         <NetworkGuideText>데스크탑과 디바이스가</NetworkGuideText>
@@ -44,7 +44,7 @@ const NetworkGuideContainer = styled.View`
   flex: 1;
   justify-content: center;
   align-items: center;
-  background-color: ${colors.BACKGROUND_COLOR};
+  background-color: ${COLORS.BACKGROUND_COLOR};
 `;
 
 const NetworkGuidePreviousScreenButton = styled.TouchableOpacity`
@@ -74,13 +74,13 @@ const NetworkGuideNextButton = styled.TouchableOpacity`
   flex-direction: row;
   margin-top: 30px;
   padding: 10px 60px;
-  background-color: ${colors.MAIN_COLOR};
+  background-color: ${COLORS.MAIN_COLOR};
   border-radius: 10px;
 `;
 
 const NetworkGuideNextButtonText = styled.Text`
   font-size: 20px;
-  color: ${colors.BACKGROUND_COLOR};
+  color: ${COLORS.BACKGROUND_COLOR};
 `;
 
 export default NetworkGuideScreen;

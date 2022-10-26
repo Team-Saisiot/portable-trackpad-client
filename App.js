@@ -7,6 +7,8 @@ import DownloadGuideScreen from "./src/screen/DownloadGuideScreen";
 import NetworkGuideScreen from "./src/screen/NetworkGuideScreen";
 import PcListScreen from "./src/screen/PcListScreen";
 import TouchPadScreen from "./src/screen/TouchPadScreen";
+import EditGestureScreen from "./src/screen/EditGestureScreen";
+import CreateGestureScreen from "./src/screen/CreateGestureScreen";
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -24,6 +26,8 @@ export default function App() {
         <Stack.Screen name="NetworkGuide" component={NetworkGuideScreen} />
         <Stack.Screen name="PcList" component={PcListScreen} />
         <Stack.Screen name="TouchPad" component={TouchPadScreen} />
+        <Stack.Screen name="EditGesture" component={EditGestureScreen} />
+        <Stack.Screen name="CreateGesture" component={CreateGestureScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

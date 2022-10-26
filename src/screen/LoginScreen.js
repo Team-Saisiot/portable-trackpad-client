@@ -7,7 +7,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import colors from "../constants/colors";
+import COLORS from "../constants/COLORS";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -53,10 +53,10 @@ const LoginScreen = ({ navigation }) => {
   return (
     <LoginContainer>
       <LoginPreviousScreenButton onPress={() => navigation.navigate("Main")}>
-        <Ionicons name="arrow-back" size={32} color={colors.MAIN_COLOR} />
+        <Ionicons name="arrow-back" size={32} color={COLORS.MAIN_COLOR} />
       </LoginPreviousScreenButton>
       <LoginNextScreenButton onPress={toNextScreen}>
-        <Ionicons name="arrow-forward" size={32} color={colors.MAIN_COLOR} />
+        <Ionicons name="arrow-forward" size={32} color={COLORS.MAIN_COLOR} />
       </LoginNextScreenButton>
       <LoginTitleText>Login</LoginTitleText>
       <LoginLoginButton
@@ -68,7 +68,7 @@ const LoginScreen = ({ navigation }) => {
         <Ionicons
           name="logo-google"
           size={32}
-          color={colors.BACKGROUND_COLOR}
+          color={COLORS.BACKGROUND_COLOR}
         />
         <LoginLoginButtonText>Google Login</LoginLoginButtonText>
       </LoginLoginButton>
@@ -80,7 +80,7 @@ const LoginContainer = styled.View`
   flex: 1;
   justify-content: center;
   align-items: center;
-  background-color: ${colors.BACKGROUND_COLOR};
+  background-color: ${COLORS.BACKGROUND_COLOR};
 `;
 
 const LoginTitleText = styled.Text`
@@ -95,14 +95,14 @@ const LoginLoginButton = styled.TouchableOpacity`
   flex-direction: row;
   margin-top: 30px;
   padding: 15px 50px;
-  background-color: ${colors.MAIN_COLOR};
+  background-color: ${COLORS.MAIN_COLOR};
   border-radius: 10px;
 `;
 
 const LoginLoginButtonText = styled.Text`
   margin-left: 10px;
   font-size: 20px;
-  color: ${colors.BACKGROUND_COLOR};
+  color: ${COLORS.BACKGROUND_COLOR};
 `;
 
 const LoginPreviousScreenButton = styled.TouchableOpacity`

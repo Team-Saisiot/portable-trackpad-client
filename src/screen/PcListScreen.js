@@ -7,7 +7,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { SERVER_PORT, PACKAGE_SERVER_PORT } from "@env";
 import { io } from "socket.io-client";
 import { useFocusEffect } from "@react-navigation/native";
-import colors from "../constants/colors";
+import COLORS from "../constants/COLORS";
 
 const PcListScreen = ({ navigation }) => {
   const [recentPC, setRecentPc] = useState(null);
@@ -71,14 +71,12 @@ const PcListScreen = ({ navigation }) => {
               allConnectableIPs.current.push({ name: data, ip: data });
             },
           );
-
-          io(`http://${localIp[i].ip}:${PACKAGE_SERVER_PORT}`).disconnect();
         }
       })();
 
       return () => {
         for (let i = 0; i < localIp?.length; i++) {
-          io(`http://${localIp[i].ip}:${PACKAGE_SERVER_PORT}`).disconnect();
+          io(`http://${localIp[i].ip}:${PACKAGE_SERVER_PORT}`).off();
         }
       };
     }, []),
@@ -89,12 +87,12 @@ const PcListScreen = ({ navigation }) => {
       <PcListPreviousScreenButton
         onPress={() => navigation.navigate("NetworkGuide")}
       >
-        <Ionicons name="arrow-back" size={32} color={colors.MAIN_COLOR} />
+        <Ionicons name="arrow-back" size={32} color={COLORS.MAIN_COLOR} />
       </PcListPreviousScreenButton>
       <PopularGestureSettingButton
         onPress={() => setIsSettingButtonPressed(!isSettingButtonPressed)}
       >
-        <Ionicons name="settings" size={24} color={colors.MAIN_COLOR} />
+        <Ionicons name="settings" size={24} color={COLORS.MAIN_COLOR} />
         <PopularGestureSettingMenuBox
           style={
             isSettingButtonPressed
@@ -135,7 +133,7 @@ const PcListScreen = ({ navigation }) => {
                 <Ionicons
                   name="desktop-sharp"
                   size={30}
-                  color={colors.MAIN_COLOR}
+                  color={COLORS.MAIN_COLOR}
                 />
                 <PcListPcName>{value?.ip}</PcListPcName>
               </PcListPc>
@@ -153,7 +151,7 @@ const PcListScreen = ({ navigation }) => {
             navigation.navigate("TouchPad", { ipAddress: recentPC?.name });
           }}
         >
-          <Ionicons name="desktop-sharp" size={30} color={colors.MAIN_COLOR} />
+          <Ionicons name="desktop-sharp" size={30} color={COLORS.MAIN_COLOR} />
           <PcListPcName>{recentPC?.name}</PcListPcName>
           <PcListPcDate>
             {new Date(recentPC?.lastAccessDate).toLocaleString()}
@@ -168,7 +166,7 @@ const PcListContainer = styled.View`
   flex: 1;
   justify-content: center;
   align-items: center;
-  background-color: ${colors.BACKGROUND_COLOR};
+  background-color: ${COLORS.BACKGROUND_COLOR};
 `;
 
 const PcListTitleText = styled.Text`
