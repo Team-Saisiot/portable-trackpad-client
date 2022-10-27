@@ -65,11 +65,12 @@ const CreateGestureScreen = ({ navigation: { navigate }, route }) => {
   });
 
   createGesture.onEnd(async () => {
+    token.current = await AsyncStorage.getItem("idToken");
     const idToken = await AsyncStorage.getItem("idToken");
 
     await axios.post(
       `${SERVER_PORT}/users/${
-        JSON.parse(idToken.current).user.email
+        JSON.parse(token.current).user.email
       }/customGesture`,
       {
         path: traceGesture.current,
