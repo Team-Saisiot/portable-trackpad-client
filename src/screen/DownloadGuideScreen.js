@@ -13,6 +13,7 @@ const DownloadGuideScreen = ({ navigation }) => {
 
   const validateEmail = async (text) => {
     const reg = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+    const idToken = await AsyncStorage.getItem("idToken");
 
     try {
       if (reg.test(text) === false) {
@@ -26,9 +27,17 @@ const DownloadGuideScreen = ({ navigation }) => {
 
         return false;
       } else {
-        await axios.post(`${SERVER_PORT}/users/email`, {
-          email: text,
-        });
+        await axios.post(
+          `${SERVER_PORT}/users/email`,
+          {
+            email: text,
+          },
+          {
+            headers: {
+              idToken: idToken,
+            },
+          },
+        );
       }
     } catch (error) {
       console.error(error);

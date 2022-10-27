@@ -20,9 +20,15 @@ const LoginScreen = ({ navigation }) => {
 
   const googleLogin = async (token) => {
     try {
-      const user = await axios.post(`${SERVER_PORT}/login`, {
-        idToken: token,
-      });
+      const user = await axios.post(
+        `${SERVER_PORT}/login`,
+        {},
+        {
+          headers: {
+            idToken: token,
+          },
+        },
+      );
 
       await AsyncStorage.setItem("idToken", JSON.stringify(user.data));
     } catch (error) {

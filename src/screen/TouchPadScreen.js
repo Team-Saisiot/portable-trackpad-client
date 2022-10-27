@@ -66,8 +66,6 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   const rotationGesture = Gesture.Rotation();
   const drawingGesture = Gesture.Pan();
   const pinchGesture = Gesture.Pinch();
-
-
   const customGesture = Gesture.Pan();
 
   fourPointPanGesture.minPointers(4);
@@ -76,7 +74,6 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   twoPointPanGesture.maxPointers(2);
   drawingGesture.maxPointers(2);
   drawingGesture.minPointers(1);
-
 
   tapGesture.onTouchesUp((event) => {
     if (event.numberOfTouches === 0) {
