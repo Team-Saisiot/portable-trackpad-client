@@ -7,7 +7,6 @@ import React, { useRef, useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
-import COLORS from "../constants/COLORS";
 
 const EditGestureScreen = ({ navigation: { navigate }, route }) => {
   const [isSettingButtonPressed, setIsSettingButtonPressed] = useState(false);
@@ -102,11 +101,6 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
               : { display: "none", transform: [{ translateY: -80 }] }
           }
         >
-          <EditGestureSettingMenuTextBox>
-            <EditGestureSettingMenuText>
-              제스처 초기화
-            </EditGestureSettingMenuText>
-          </EditGestureSettingMenuTextBox>
           <EditGestureSettingMenuTextBox
             onPress={() =>
               navigate("CreateGesture", { ipAddress: route.params.ipAddress })
@@ -159,8 +153,8 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
           <ScrollView>
             {gestureData?.map((value, index) => {
               return (
-                <>
-                  <EditGestureListBox key={index}>
+                <View key={index}>
+                  <EditGestureListBox>
                     <EditGestureActionBox
                       onPress={() => {
                         moveAnimation(value);
@@ -174,17 +168,23 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
                         style={{ width: 150 }}
                         selectedValue={value.function}
                         dropdownIconColor="#7e94ae"
-                        onValueChange={(itemValue, itemIndex) => {
+                        onValueChange={(itemValue) => {
                           setGestureData(() => {
+                            const idToken = AsyncStorage.getItem("idToken");
                             let copy = [...gestureData];
 
                             copy[index].function = itemValue;
 
                             axios.post(
                               `${SERVER_PORT}/users/${
-                                JSON.parse(idToken.current).user.email
+                                JSON.parse(token.current).user.email
                               }/gestures`,
                               { updatedGesture: copy },
+                              {
+                                headers: {
+                                  idToken: idToken,
+                                },
+                              },
                             );
 
                             return copy;
@@ -215,10 +215,9 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
                         <Picker.Item label="일시정지" value="pause" />
                       </Picker>
                     </EditGestureFunctionBox>
-                    <Ionicons name="refresh" size={15} color="#999999" />
                   </EditGestureListBox>
                   <EditGestureHorizonLine />
-                </>
+                </View>
               );
             })}
             <EditGestureListBox>
@@ -231,12 +230,18 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
                   style={{ width: 150 }}
                   dropdownIconColor="#7e94ae"
                   selectedValue={selectedLanguage}
-                  onValueChange={(itemValue, itemIndex) => {
+                  onValueChange={(itemValue) => {
+                    const idToken = AsyncStorage.getItem("idToken");
                     axios.post(
                       `${SERVER_PORT}/users/${
-                        JSON.parse(idToken.current).user.email
+                        JSON.parse(token.current).user.email
                       }/customGesture`,
                       { function: itemValue },
+                      {
+                        headers: {
+                          idToken: idToken,
+                        },
+                      },
                     );
 
                     setSelectedLanguage(itemValue);
@@ -266,7 +271,6 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
                   <Picker.Item label="일시정지" value="pause" />
                 </Picker>
               </EditGestureFunctionBox>
-              <Ionicons name="refresh" size={15} color="#999999" />
             </EditGestureListBox>
           </ScrollView>
         </View>

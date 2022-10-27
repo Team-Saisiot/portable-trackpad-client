@@ -32,7 +32,7 @@ const LoginScreen = ({ navigation }) => {
 
       await AsyncStorage.setItem("idToken", JSON.stringify(user.data));
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

@@ -11,8 +11,8 @@ import {
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import styled from "styled-components/native";
-import COLORS from "../constants/COLORS";
 import axios from "axios";
+import COLORS from "../constants/COLORS";
 
 const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   const [isSettingButtonPressed, setIsSettingButtonPressed] = useState(false);
@@ -25,7 +25,7 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   const prevXPosition = useRef(0);
   const prevYPosition = useRef(0);
   const traceGesture = useRef([]);
-  const idToken = useRef(null);
+  const token = useRef(null);
   const userCustom = useRef(null);
   const gestureFunctions = useRef([]);
 
@@ -37,7 +37,7 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   let traceArray = [];
 
   const toEditGestureScreen = async () => {
-    if (idToken.current) {
+    if (token.current) {
       navigate("EditGesture", { ipAddress: route.params.ipAddress });
     } else {
       Alert.alert("Need Login", "로그인이 필요합니다.", [
@@ -115,10 +115,12 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
       socket.emit("user-send", [
         gestureFunctions.current.data.gesture[4].function,
       ]);
+      gestureFunctions.current.data.gesture[4].count++;
     } else {
       socket.emit("user-send", [
         gestureFunctions.current.data.gesture[3].function,
       ]);
+      gestureFunctions.current.data.gesture[3].count++;
     }
   });
 
@@ -140,10 +142,12 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
       socket.emit("user-send", [
         gestureFunctions.current.data.gesture[1].function,
       ]);
+      gestureFunctions.current.data.gesture[1].count++;
     } else if (event.translationX > 0 && Math.abs(event.translationY) < 10) {
       socket.emit("user-send", [
         gestureFunctions.current.data.gesture[0].function,
       ]);
+      gestureFunctions.current.data.gesture[0].count++;
     }
   });
 
@@ -268,20 +272,49 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   useFocusEffect(
     React.useCallback(() => {
       (async () => {
-        idToken.current = await AsyncStorage.getItem("idToken");
+        token.current = await AsyncStorage.getItem("idToken");
+        const idToken = await AsyncStorage.getItem("idToken");
         userCustom.current = await axios.get(
           `${SERVER_PORT}/users/${
-            JSON.parse(idToken.current).user.email
+            JSON.parse(token.current).user.email
           }/customGesture`,
+          {
+            headers: {
+              idToken: idToken,
+            },
+          },
         );
 
         gestureFunctions.current = await axios.get(
           `${SERVER_PORT}/users/${
-            JSON.parse(idToken.current).user.email
+            JSON.parse(token.current).user.email
           }/gestures`,
+          {
+            headers: {
+              idToken: idToken,
+            },
+          },
         );
       })();
       return () => {
+        (async () => {
+          token.current = await AsyncStorage.getItem("idToken");
+          const idToken = await AsyncStorage.getItem("idToken");
+
+          await axios.post(
+            `${SERVER_PORT}/users/${
+              JSON.parse(token.current).user.email
+            }/gestures`,
+            {
+              updatedGesture: gestureFunctions.current.data,
+            },
+            {
+              headers: {
+                idToken: idToken,
+              },
+            },
+          );
+        })();
         socket.off();
       };
     }, []),
@@ -312,6 +345,7 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
                 onPress={() =>
                   navigate("PopularGesture", {
                     ipAddress: route.params.ipAddress,
+                    userGestures: gestureFunctions.current.data.gesture,
                   })
                 }
               >

@@ -29,13 +29,16 @@ const PcListScreen = ({ navigation }) => {
 
   const connectPc = async (pc) => {
     try {
-      const params = { max: 1, by: "connected_at", order: "asc" };
       const idToken = await AsyncStorage.getItem("idToken");
 
       await axios.post(
         `${SERVER_PORT}/users/${JSON.parse(idToken).user.email}/pc`,
         { recentPc: { name: pc.ip, ipAddress: pc.ip } },
-        { params },
+        {
+          headers: {
+            idToken: idToken,
+          },
+        },
       );
     } catch (error) {
       console.error(error);
@@ -81,6 +84,10 @@ const PcListScreen = ({ navigation }) => {
             },
           );
         }
+
+        setTimeout(() => {
+          setConnectableIpList(() => allConnectableIPs.current);
+        }, 2000);
       })();
 
       return () => {
