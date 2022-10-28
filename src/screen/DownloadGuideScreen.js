@@ -27,6 +27,16 @@ const DownloadGuideScreen = ({ navigation }) => {
 
         return false;
       } else {
+        Alert.alert(
+          "Email sent successfully",
+          "이메일이 성공적으로 전송되었습니다.",
+          [
+            {
+              text: "확인",
+            },
+          ],
+        );
+
         await axios.post(
           `${SERVER_PORT}/users/email`,
           {
@@ -87,7 +97,6 @@ const DownloadGuideScreen = ({ navigation }) => {
         <DownloadGuideUserEmailTextInput
           onChangeText={setUserEmail}
           onFocus={() => setIsFocus(true)}
-          onBlur={() => setIsFocus(false)}
           value={email}
         />
         <DownloadGuideUserEmailPlaceHolder

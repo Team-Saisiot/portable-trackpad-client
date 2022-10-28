@@ -154,8 +154,8 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   rotationGesture.onUpdate((event) => {
     rotateCount++;
 
-    if (event.numberOfPointers === 3 && rotateCount > 4) {
-      if (event.rotation < 0) {
+    if (event.numberOfPointers === 3 && rotateCount > 10) {
+      if (event.rotation > 0) {
         socket.emit("user-send", ["volumeUp", event.rotation]);
       } else {
         socket.emit("user-send", ["volumeDown", event.rotation]);
@@ -272,8 +272,9 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   useFocusEffect(
     React.useCallback(() => {
       (async () => {
-        token.current = await AsyncStorage.getItem("idToken");
         const idToken = await AsyncStorage.getItem("idToken");
+
+        token.current = await AsyncStorage.getItem("idToken");
         userCustom.current = await axios.get(
           `${SERVER_PORT}/users/${
             JSON.parse(token.current).user.email
@@ -296,6 +297,7 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
           },
         );
       })();
+
       return () => {
         (async () => {
           token.current = await AsyncStorage.getItem("idToken");
@@ -315,6 +317,7 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
             },
           );
         })();
+
         socket.off();
       };
     }, []),
