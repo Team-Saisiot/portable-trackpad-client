@@ -50,8 +50,9 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
   useFocusEffect(
     React.useCallback(() => {
       (async () => {
-        token.current = await AsyncStorage.getItem("idToken");
         const idToken = await AsyncStorage.getItem("idToken");
+
+        token.current = await AsyncStorage.getItem("idToken");
 
         const customGesture = await axios.get(
           `${SERVER_PORT}/users/${
@@ -110,7 +111,10 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
           </EditGestureSettingMenuTextBox>
           <EditGestureSettingMenuTextBox
             onPress={() =>
-              navigate("PopularGesture", { ipAddress: route.params.ipAddress })
+              navigate("PopularGesture", {
+                ipAddress: route.params.ipAddress,
+                userGestures: gestureData,
+              })
             }
           >
             <EditGestureSettingMenuText>
@@ -171,6 +175,7 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
                         onValueChange={(itemValue) => {
                           setGestureData(() => {
                             const idToken = AsyncStorage.getItem("idToken");
+
                             let copy = [...gestureData];
 
                             copy[index].function = itemValue;
@@ -232,6 +237,7 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
                   selectedValue={selectedLanguage}
                   onValueChange={(itemValue) => {
                     const idToken = AsyncStorage.getItem("idToken");
+
                     axios.post(
                       `${SERVER_PORT}/users/${
                         JSON.parse(token.current).user.email

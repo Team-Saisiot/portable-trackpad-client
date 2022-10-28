@@ -60,7 +60,11 @@ const PopularGestureScreen = ({ navigation, route }) => {
           }
         >
           <PopularGestureSettingMenuTextBox
-            onPress={() => navigation.navigate("EditGesture")}
+            onPress={() =>
+              navigation.navigate("EditGesture", {
+                ipAddress: route.params.ipAddress,
+              })
+            }
           >
             <PopularGestureSettingMenuText>
               제스처 편집
