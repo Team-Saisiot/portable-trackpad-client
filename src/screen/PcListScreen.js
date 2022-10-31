@@ -51,6 +51,7 @@ const PcListScreen = ({ navigation }) => {
 
       (async () => {
         const params = { max: 1, by: "connected_at", order: "asc" };
+
         const idToken = await AsyncStorage.getItem("idToken");
         const recentPcData = await axios.get(
           `${SERVER_PORT}/users/${JSON.parse(idToken).user.email}/pc`,
