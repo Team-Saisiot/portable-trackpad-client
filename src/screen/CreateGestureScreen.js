@@ -163,7 +163,7 @@ const CreateGestureScreen = ({ navigation: { navigate }, route }) => {
       <TouchPadContainer>
         <TouchPadPreviousScreenButton
           onPress={() =>
-            navigate("TouchPad", {
+            navigate("EditGesture", {
               ipAddress: route.params.ipAddress,
             })
           }
@@ -184,17 +184,6 @@ const CreateGestureScreen = ({ navigation: { navigate }, route }) => {
             >
               <TouchPadSettingMenuTextBox onPress={toEditGestureScreen}>
                 <TouchPadSettingMenuText>제스처 편집</TouchPadSettingMenuText>
-              </TouchPadSettingMenuTextBox>
-              <TouchPadSettingMenuTextBox
-                onPress={() =>
-                  navigate("PopularGesture", {
-                    ipAddress: route.params.ipAddress,
-                  })
-                }
-              >
-                <TouchPadSettingMenuText>
-                  자주 사용하는 제스처
-                </TouchPadSettingMenuText>
               </TouchPadSettingMenuTextBox>
               <TouchPadSettingMenuTextBox onPress={logoutAlert}>
                 <TouchPadSettingMenuText>로그아웃</TouchPadSettingMenuText>

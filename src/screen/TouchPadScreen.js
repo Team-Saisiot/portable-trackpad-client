@@ -212,11 +212,11 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
     }
 
     if (cornerCount === 3) {
-      socket.emit("drawing", ["square"]);
+      socket.emit("drawingGesture", ["square"]);
     } else if (cornerCount === 2) {
-      socket.emit("drawing", ["triangle"]);
+      socket.emit("drawingGesture", ["triangle"]);
     } else {
-      socket.emit("drawing", ["circle"]);
+      socket.emit("drawingGesture", ["circle"]);
     }
 
     cornerCount = 0;
@@ -254,9 +254,9 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
 
   pinchGesture.onUpdate((event) => {
     if (event.scale > 1) {
-      socket.emit("drawing", ["scaleUp"]);
+      socket.emit("drawingGesture", ["scaleUp"]);
     } else {
-      socket.emit("drawing", ["scaleDown"]);
+      socket.emit("drawingGesture", ["scaleDown"]);
     }
   });
 
