@@ -1,11 +1,13 @@
 {
   "expo": {
     "name": "portable-trackpad-client",
-    "slug": "portable-trackpad-client",
-    "version": "1.0.0",
+    "slug": "portable-trackpad",
+    "owner": "mochapresso",
+    "version": "0.10.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "scheme": "demo",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -14,9 +16,7 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
