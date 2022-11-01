@@ -36,7 +36,7 @@
 
 Deploy
 
-- 
+- https://gesture-drawing.online/
 
 Git Repository
 
@@ -76,6 +76,8 @@ Git Repository
 2. 환견변수 파일(.env)을 생성하고 아래와 같은 형식으로 입력한다.
     
     ```jsx
+    REACT_APP_SERVER_IPADDRESS=REACT_APP_SERVER_IPADDRESS
+    REACT_APP_SERVER_PORT=REACT_APP_SERVER_PORT
     REACT_APP_PACKAGE_IPADDRESS=REACT_APP_PACKAGE_IPADDRESS
     REACT_APP_PACKAGE_PORT=REACT_APP_PACKAGE_PORT
     ```
@@ -127,12 +129,54 @@ Git Repository
 
 ### 커서 이동
 
-[영상 링크]
+https://user-images.githubusercontent.com/99075014/199181600-7b149691-fb0b-460c-8f07-c063db5a33c2.mov
 
-<aside>
-💡
 
-</aside>
+### 드래그
+
+https://user-images.githubusercontent.com/99075014/199181649-86f67156-5f5b-4e0a-a0d1-933c6a4897ba.mov
+
+
+### 스크롤
+
+https://user-images.githubusercontent.com/99075014/199181705-899ffa28-e478-438a-9096-a708e072c7b8.mov
+
+
+### 브라우저 앞으로, 뒤로가기
+
+https://user-images.githubusercontent.com/99075014/199185416-abc538cb-1249-4700-8bf6-a9d4030b0a2d.mov
+
+
+### 브라우저 탭 앞으로, 뒤로가기
+
+https://user-images.githubusercontent.com/99075014/199185470-f21f706c-702b-423b-b4c7-a1cf1c38cb6e.mov
+
+
+### 볼륨 업, 다운
+
+https://user-images.githubusercontent.com/99075014/199185310-74e5a7b0-864d-443e-9e12-bcbc2db78b96.mov
+
+
+### 제스처 생성 기능
+
+https://user-images.githubusercontent.com/99075014/199181948-ce32368d-2462-41c2-b2ac-26aae2555eee.mov
+
+
+### 제스처 편집 기능
+
+https://user-images.githubusercontent.com/99075014/199185540-a9fb2cbd-2cb8-4c9c-b312-698b54467a5b.mov
+
+
+### 제스처로 도형 생성 기능 (With Gesture Drawing)
+
+https://user-images.githubusercontent.com/99075014/199187026-83c794cf-bc4b-43b3-a888-023e199bf092.mov
+
+
+### 제스처로 도형 크기 조절 기능 (With Gesture Drawing)
+
+https://user-images.githubusercontent.com/99075014/199187110-2d024476-e1a5-4123-9684-38f4f7722f5f.mov
+
+
 
 # 기술 스택
 
