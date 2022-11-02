@@ -341,6 +341,15 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
                   : { display: "none", transform: [{ translateY: -80 }] }
               }
             >
+              <TouchPadSettingMenuTextBox
+                onPress={() => {
+                  socket.emit("user-send", ["openGestureDrawing"]);
+                }}
+              >
+                <TouchPadSettingMenuText>
+                  Gesture Drawing
+                </TouchPadSettingMenuText>
+              </TouchPadSettingMenuTextBox>
               <TouchPadSettingMenuTextBox onPress={toEditGestureScreen}>
                 <TouchPadSettingMenuText>제스처 편집</TouchPadSettingMenuText>
               </TouchPadSettingMenuTextBox>
