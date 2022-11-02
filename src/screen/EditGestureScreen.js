@@ -173,25 +173,27 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
                         selectedValue={value.function}
                         dropdownIconColor="#7e94ae"
                         onValueChange={(itemValue) => {
-                          setGestureData(() => {
-                            const idToken = AsyncStorage.getItem("idToken");
+                          const idToken = AsyncStorage.getItem("idToken");
 
-                            let copy = [...gestureData];
+                          let copy = [...gestureData];
 
-                            copy[index].function = itemValue;
+                          copy[index].function = itemValue;
 
-                            axios.post(
-                              `${SERVER_PORT}/users/${
-                                JSON.parse(token.current).user.email
-                              }/gestures`,
-                              { updatedGesture: copy },
-                              {
-                                headers: {
-                                  idToken: idToken,
-                                },
+                          axios.post(
+                            `${SERVER_PORT}/users/${
+                              JSON.parse(token.current).user.email
+                            }/gestures`,
+                            {
+                              updatedGesture: { gesture: copy },
+                            },
+                            {
+                              headers: {
+                                idToken: idToken,
                               },
-                            );
+                            },
+                          );
 
+                          setGestureData(() => {
                             return copy;
                           });
                         }}
