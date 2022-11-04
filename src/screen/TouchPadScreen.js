@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Alert, Animated } from "react-native";
+import { Animated } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { io } from "socket.io-client";
@@ -13,8 +13,11 @@ import {
 import styled from "styled-components/native";
 import axios from "axios";
 import COLORS from "../constants/COLORS";
+import LogoutWithUpdateGestureButton from "../components/LogoutWithUpdateGestureButton";
+import ToNextScreenTextButton from "../components/ToNextScreenTextButton";
+import ToPreviousScreenButton from "../components/ToPreviousScreenButton";
 
-const TouchPadScreen = ({ navigation: { navigate }, route }) => {
+const TouchPadScreen = ({ route }) => {
   const [isSettingButtonPressed, setIsSettingButtonPressed] = useState(false);
   const [isDrawingMode, setIsDrawingMode] = useState(false);
 
@@ -25,9 +28,12 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   const prevXPosition = useRef(0);
   const prevYPosition = useRef(0);
   const traceGesture = useRef([]);
-  const token = useRef(null);
   const userCustom = useRef(null);
-  const gestureFunctions = useRef([]);
+  const gestureFunctions = useRef({
+    data: {
+      gesture: [],
+    },
+  });
 
   const socket = io(`http://${route.params.ipAddress}:${PACKAGE_SERVER_PORT}`);
 
@@ -35,29 +41,6 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   let prevAngle = -1;
   let cornerCount = 0;
   let traceArray = [];
-
-  const toEditGestureScreen = async () => {
-    if (token.current) {
-      navigate("EditGesture", { ipAddress: route.params.ipAddress });
-    } else {
-      Alert.alert("Need Login", "로그인이 필요합니다.", [
-        {
-          text: "확인",
-        },
-      ]);
-    }
-  };
-
-  const logoutAlert = async () => {
-    await AsyncStorage.clear();
-
-    Alert.alert("Logout", "로그아웃이 완료되었습니다.", [
-      {
-        text: "확인",
-        onPress: () => navigate("Main"),
-      },
-    ]);
-  };
 
   const panGesture = Gesture.Pan();
   const fourPointPanGesture = Gesture.Pan();
@@ -274,10 +257,9 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
       (async () => {
         const idToken = await AsyncStorage.getItem("idToken");
 
-        token.current = await AsyncStorage.getItem("idToken");
         userCustom.current = await axios.get(
           `${SERVER_PORT}/users/${
-            JSON.parse(token.current).user.email
+            JSON.parse(idToken).user.email
           }/customGesture`,
           {
             headers: {
@@ -287,9 +269,7 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
         );
 
         gestureFunctions.current = await axios.get(
-          `${SERVER_PORT}/users/${
-            JSON.parse(token.current).user.email
-          }/gestures`,
+          `${SERVER_PORT}/users/${JSON.parse(idToken).user.email}/gestures`,
           {
             headers: {
               idToken: idToken,
@@ -300,22 +280,21 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
 
       return () => {
         (async () => {
-          token.current = await AsyncStorage.getItem("idToken");
           const idToken = await AsyncStorage.getItem("idToken");
 
-          await axios.post(
-            `${SERVER_PORT}/users/${
-              JSON.parse(token.current).user.email
-            }/gestures`,
-            {
-              updatedGesture: gestureFunctions.current.data,
-            },
-            {
-              headers: {
-                idToken: idToken,
+          if (idToken) {
+            await axios.post(
+              `${SERVER_PORT}/users/${JSON.parse(idToken).user.email}/gestures`,
+              {
+                updatedGesture: gestureFunctions.current.data,
               },
-            },
-          );
+              {
+                headers: {
+                  idToken: idToken,
+                },
+              },
+            );
+          }
         })();
 
         socket.off();
@@ -326,9 +305,7 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <TouchPadContainer>
-        <TouchPadPreviousScreenButton onPress={() => navigate("PcList")}>
-          <Ionicons name="arrow-back" size={32} color={COLORS.MAIN_COLOR} />
-        </TouchPadPreviousScreenButton>
+        <ToPreviousScreenButton screen={"PcList"} />
         <TouchPadSettingButton
           onPress={() => setIsSettingButtonPressed(!isSettingButtonPressed)}
         >
@@ -350,24 +327,20 @@ const TouchPadScreen = ({ navigation: { navigate }, route }) => {
                   Gesture Drawing
                 </TouchPadSettingMenuText>
               </TouchPadSettingMenuTextBox>
-              <TouchPadSettingMenuTextBox onPress={toEditGestureScreen}>
-                <TouchPadSettingMenuText>제스처 편집</TouchPadSettingMenuText>
-              </TouchPadSettingMenuTextBox>
-              <TouchPadSettingMenuTextBox
-                onPress={() =>
-                  navigate("PopularGesture", {
-                    ipAddress: route.params.ipAddress,
-                    userGestures: gestureFunctions.current.data.gesture,
-                  })
-                }
-              >
-                <TouchPadSettingMenuText>
-                  자주 사용하는 제스처
-                </TouchPadSettingMenuText>
-              </TouchPadSettingMenuTextBox>
-              <TouchPadSettingMenuTextBox onPress={logoutAlert}>
-                <TouchPadSettingMenuText>로그아웃</TouchPadSettingMenuText>
-              </TouchPadSettingMenuTextBox>
+              <ToNextScreenTextButton
+                screen={"EditGesture"}
+                text={"제스처 편집"}
+                props={{ ipAddress: route.params.ipAddress }}
+              />
+              <ToNextScreenTextButton
+                screen={"PopularGesture"}
+                text={"자주 사용하는 제스처"}
+                props={{
+                  ipAddress: route.params.ipAddress,
+                  userGestures: gestureFunctions.current.data.gesture,
+                }}
+              />
+              <LogoutWithUpdateGestureButton ref={{ gestureFunctions }} />
             </TouchPadSettingMenuBox>
           </Animated.View>
         </TouchPadSettingButton>
@@ -411,12 +384,6 @@ const TouchPadContainer = styled.View`
   justify-content: center;
   align-items: center;
   background-color: ${COLORS.BACKGROUND_COLOR};
-`;
-
-const TouchPadPreviousScreenButton = styled.TouchableOpacity`
-  position: absolute;
-  top: 50px;
-  left: 20px;
 `;
 
 const TouchPadSettingButton = styled.TouchableOpacity`

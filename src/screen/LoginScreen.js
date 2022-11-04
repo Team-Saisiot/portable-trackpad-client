@@ -2,12 +2,12 @@ import { useEffect } from "react";
 import axios from "axios";
 import styled from "styled-components/native";
 import { SERVER_PORT, EXPO_CLIENT_ID, EXPO_WEB_CLIENT_ID } from "@env";
-import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import COLORS from "../constants/COLORS";
+import ToPreviousScreenButton from "../components/ToPreviousScreenButton";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -36,36 +36,20 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
-  const toNextScreen = async () => {
-    const idToken = await AsyncStorage.getItem("idToken");
-
-    if (idToken) {
-      navigation.navigate("DownloadGuide");
-    } else {
-      Alert.alert("Need Login", "로그인이 필요합니다.", [
-        {
-          text: "확인",
-        },
-      ]);
-    }
-  };
-
   useEffect(() => {
-    if (response?.type === "success") {
-      googleLogin(response.params.id_token);
-    }
+    (async () => {
+      if (response?.type === "success") {
+        await googleLogin(response.params.id_token);
+        navigation.navigate("DownloadGuide");
+      }
+    })();
   }, [response]);
 
   return (
     <LoginContainer>
-      <LoginPreviousScreenButton onPress={() => navigation.navigate("Main")}>
-        <Ionicons name="arrow-back" size={32} color={COLORS.MAIN_COLOR} />
-      </LoginPreviousScreenButton>
-      <LoginNextScreenButton onPress={toNextScreen}>
-        <Ionicons name="arrow-forward" size={32} color={COLORS.MAIN_COLOR} />
-      </LoginNextScreenButton>
+      <ToPreviousScreenButton screen={"Main"} />
       <LoginTitleText>Login</LoginTitleText>
-      <LoginLoginButton
+      <LoginButton
         disabled={!request}
         onPress={() => {
           promptAsync();
@@ -76,8 +60,8 @@ const LoginScreen = ({ navigation }) => {
           size={32}
           color={COLORS.BACKGROUND_COLOR}
         />
-        <LoginLoginButtonText>Google Login</LoginLoginButtonText>
-      </LoginLoginButton>
+        <LoginButtonText>Google Login</LoginButtonText>
+      </LoginButton>
     </LoginContainer>
   );
 };
@@ -94,7 +78,7 @@ const LoginTitleText = styled.Text`
   font-size: 60px;
 `;
 
-const LoginLoginButton = styled.TouchableOpacity`
+const LoginButton = styled.TouchableOpacity`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -105,22 +89,10 @@ const LoginLoginButton = styled.TouchableOpacity`
   border-radius: 10px;
 `;
 
-const LoginLoginButtonText = styled.Text`
+const LoginButtonText = styled.Text`
   margin-left: 10px;
   font-size: 20px;
   color: ${COLORS.BACKGROUND_COLOR};
-`;
-
-const LoginPreviousScreenButton = styled.TouchableOpacity`
-  position: absolute;
-  top: 50px;
-  left: 20px;
-`;
-
-const LoginNextScreenButton = styled.TouchableOpacity`
-  position: absolute;
-  bottom: 40px;
-  right: 20px;
 `;
 
 export default LoginScreen;

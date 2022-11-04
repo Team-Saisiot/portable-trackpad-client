@@ -1,5 +1,4 @@
 import React, { useRef, useState } from "react";
-import { Alert, ScrollView } from "react-native";
 import styled from "styled-components/native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -8,6 +7,8 @@ import { SERVER_PORT, PACKAGE_SERVER_PORT } from "@env";
 import { io } from "socket.io-client";
 import { useFocusEffect } from "@react-navigation/native";
 import COLORS from "../constants/COLORS";
+import ToPreviousScreenButton from "../components/ToPreviousScreenButton";
+import LogoutButton from "../components/LogoutButton";
 
 const PcListScreen = ({ navigation }) => {
   const [recentPC, setRecentPc] = useState(null);
@@ -16,17 +17,6 @@ const PcListScreen = ({ navigation }) => {
   const [customIp, setCustomIp] = useState("");
 
   const allConnectableIPs = useRef([]);
-
-  const logoutAlert = async () => {
-    await AsyncStorage.clear();
-
-    Alert.alert("Logout", "로그아웃이 완료되었습니다.", [
-      {
-        text: "확인",
-        onPress: () => navigation.navigate("Main"),
-      },
-    ]);
-  };
 
   const connectPc = async (pc) => {
     try {
@@ -102,11 +92,7 @@ const PcListScreen = ({ navigation }) => {
 
   return (
     <PcListContainer>
-      <PcListPreviousScreenButton
-        onPress={() => navigation.navigate("NetworkGuide")}
-      >
-        <Ionicons name="arrow-back" size={32} color={COLORS.MAIN_COLOR} />
-      </PcListPreviousScreenButton>
+      <ToPreviousScreenButton screen={"NetworkGuide"} />
       <PopularGestureSettingButton
         onPress={() => setIsSettingButtonPressed(!isSettingButtonPressed)}
       >
@@ -127,11 +113,7 @@ const PcListScreen = ({ navigation }) => {
               Select PC 새로고침
             </PopularGestureSettingMenuText>
           </PopularGestureSettingMenuTextBox>
-          <PopularGestureSettingMenuTextBox onPress={logoutAlert}>
-            <PopularGestureSettingMenuText>
-              로그아웃
-            </PopularGestureSettingMenuText>
-          </PopularGestureSettingMenuTextBox>
+          <LogoutButton />
         </PopularGestureSettingMenuBox>
       </PopularGestureSettingButton>
       <PcListHorizonBox
@@ -209,12 +191,6 @@ const PcListContainer = styled.View`
 
 const PcListTitleText = styled.Text`
   font-size: 50px;
-`;
-
-const PcListPreviousScreenButton = styled.TouchableOpacity`
-  position: absolute;
-  top: 50px;
-  left: 20px;
 `;
 
 const PcListTitleBox = styled.View`

@@ -12,37 +12,16 @@ import styled from "styled-components/native";
 import COLORS from "../constants/COLORS";
 import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
+import LogoutButton from "../components/LogoutButton";
+import ToNextScreenTextButton from "../components/ToNextScreenTextButton";
+import ToPreviousScreenButton from "../components/ToPreviousScreenButton";
 
-const CreateGestureScreen = ({ navigation: { navigate }, route }) => {
+const CreateGestureScreen = ({ route }) => {
   const [isSettingButtonPressed, setIsSettingButtonPressed] = useState(false);
   const [isCreateMode, setIsCreateMode] = useState(false);
 
   const traceGesture = useRef([]);
-  const token = useRef(null);
   const userCustom = useRef(null);
-
-  const toEditGestureScreen = async () => {
-    if (token.current) {
-      navigate("EditGesture", { ipAddress: route.params.ipAddress });
-    } else {
-      Alert.alert("Need Login", "로그인이 필요합니다.", [
-        {
-          text: "확인",
-        },
-      ]);
-    }
-  };
-
-  const logoutAlert = async () => {
-    await AsyncStorage.clear();
-
-    Alert.alert("Logout", "로그아웃이 완료되었습니다.", [
-      {
-        text: "확인",
-        onPress: () => navigate("Main"),
-      },
-    ]);
-  };
 
   const drawingGesture = Gesture.Pan();
   const createGesture = Gesture.Pan();
@@ -65,13 +44,10 @@ const CreateGestureScreen = ({ navigation: { navigate }, route }) => {
   });
 
   createGesture.onEnd(async () => {
-    token.current = await AsyncStorage.getItem("idToken");
     const idToken = await AsyncStorage.getItem("idToken");
 
     await axios.post(
-      `${SERVER_PORT}/users/${
-        JSON.parse(token.current).user.email
-      }/customGesture`,
+      `${SERVER_PORT}/users/${JSON.parse(idToken).user.email}/customGesture`,
       {
         path: traceGesture.current,
       },
@@ -141,12 +117,11 @@ const CreateGestureScreen = ({ navigation: { navigate }, route }) => {
   useFocusEffect(
     React.useCallback(() => {
       (async () => {
-        token.current = await AsyncStorage.getItem("idToken");
         const idToken = await AsyncStorage.getItem("idToken");
 
         userCustom.current = await axios.get(
           `${SERVER_PORT}/users/${
-            JSON.parse(token.current).user.email
+            JSON.parse(idToken).user.email
           }/customGesture`,
           {
             headers: {
@@ -161,15 +136,12 @@ const CreateGestureScreen = ({ navigation: { navigate }, route }) => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <TouchPadContainer>
-        <TouchPadPreviousScreenButton
-          onPress={() =>
-            navigate("EditGesture", {
-              ipAddress: route.params.ipAddress,
-            })
-          }
-        >
-          <Ionicons name="arrow-back" size={32} color={COLORS.MAIN_COLOR} />
-        </TouchPadPreviousScreenButton>
+        <ToPreviousScreenButton
+          screen={"EditGesture"}
+          props={{
+            ipAddress: route.params.ipAddress,
+          }}
+        />
         <TouchPadSettingButton
           onPress={() => setIsSettingButtonPressed(!isSettingButtonPressed)}
         >
@@ -182,12 +154,12 @@ const CreateGestureScreen = ({ navigation: { navigate }, route }) => {
                   : { display: "none", transform: [{ translateY: -80 }] }
               }
             >
-              <TouchPadSettingMenuTextBox onPress={toEditGestureScreen}>
-                <TouchPadSettingMenuText>제스처 편집</TouchPadSettingMenuText>
-              </TouchPadSettingMenuTextBox>
-              <TouchPadSettingMenuTextBox onPress={logoutAlert}>
-                <TouchPadSettingMenuText>로그아웃</TouchPadSettingMenuText>
-              </TouchPadSettingMenuTextBox>
+              <ToNextScreenTextButton
+                screen={"EditGesture"}
+                text={"제스처 편집"}
+                props={{ ipAddress: route.params.ipAddress }}
+              />
+              <LogoutButton />
             </TouchPadSettingMenuBox>
           </Animated.View>
         </TouchPadSettingButton>
@@ -220,12 +192,6 @@ const TouchPadContainer = styled.View`
   background-color: ${COLORS.BACKGROUND_COLOR};
 `;
 
-const TouchPadPreviousScreenButton = styled.TouchableOpacity`
-  position: absolute;
-  top: 50px;
-  left: 20px;
-`;
-
 const TouchPadSettingButton = styled.TouchableOpacity`
   position: absolute;
   display: flex;
@@ -243,19 +209,6 @@ const TouchPadSettingMenuBox = styled.View`
   background-color: white;
   border: 1px solid #888888;
   border-radius: 10px;
-`;
-
-const TouchPadSettingMenuTextBox = styled.TouchableOpacity`
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  width: 180px;
-  background-color: transparent;
-`;
-
-const TouchPadSettingMenuText = styled.Text`
-  padding: 10px 15px;
-  font-size: 18px;
 `;
 
 const TouchPadSwitchBox = styled.View`

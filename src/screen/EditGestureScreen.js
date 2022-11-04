@@ -1,14 +1,17 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Alert, Animated, ScrollView, View } from "react-native";
+import { Animated, ScrollView, View } from "react-native";
 import styled from "styled-components/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SERVER_PORT } from "@env";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
+import LogoutButton from "../components/LogoutButton";
+import ToNextScreenTextButton from "../components/ToNextScreenTextButton";
+import ToPreviousScreenButton from "../components/ToPreviousScreenButton";
 
-const EditGestureScreen = ({ navigation: { navigate }, route }) => {
+const EditGestureScreen = ({ route }) => {
   const [isSettingButtonPressed, setIsSettingButtonPressed] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("");
   const [startPosition, setStartPosition] = useState(-50);
@@ -16,8 +19,6 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
   const [animatedPointer, setAnimatedPointer] = useState(2);
   const [up, setUp] = useState(false);
   const [gestureData, setGestureData] = useState([]);
-
-  const token = useRef(null);
 
   const AnimatedBox = Animated.createAnimatedComponent(Box);
   const X = new Animated.Value(startPosition);
@@ -36,27 +37,14 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
     });
   };
 
-  const logoutAlert = async () => {
-    await AsyncStorage.clear();
-
-    Alert.alert("Logout", "로그아웃이 완료되었습니다.", [
-      {
-        text: "확인",
-        onPress: () => navigate("Main"),
-      },
-    ]);
-  };
-
   useFocusEffect(
     React.useCallback(() => {
       (async () => {
         const idToken = await AsyncStorage.getItem("idToken");
 
-        token.current = await AsyncStorage.getItem("idToken");
-
         const customGesture = await axios.get(
           `${SERVER_PORT}/users/${
-            JSON.parse(token.current).user.email
+            JSON.parse(idToken).user.email
           }/customGesture`,
           {
             headers: {
@@ -66,9 +54,7 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
         );
 
         const userGestures = await axios.get(
-          `${SERVER_PORT}/users/${
-            JSON.parse(token.current).user.email
-          }/gestures`,
+          `${SERVER_PORT}/users/${JSON.parse(idToken).user.email}/gestures`,
           {
             headers: {
               idToken: idToken,
@@ -84,13 +70,10 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
 
   return (
     <EditGestureContainer>
-      <EditGesturePreviousScreenButton
-        onPress={() =>
-          navigate("TouchPad", { ipAddress: route.params.ipAddress })
-        }
-      >
-        <Ionicons name="arrow-back" size={32} color="#7e94ae" />
-      </EditGesturePreviousScreenButton>
+      <ToPreviousScreenButton
+        screen={"TouchPad"}
+        props={{ ipAddress: route.params.ipAddress }}
+      />
       <EditGestureSettingButton
         onPress={() => setIsSettingButtonPressed(!isSettingButtonPressed)}
       >
@@ -102,28 +85,22 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
               : { display: "none", transform: [{ translateY: -80 }] }
           }
         >
-          <EditGestureSettingMenuTextBox
-            onPress={() =>
-              navigate("CreateGesture", { ipAddress: route.params.ipAddress })
-            }
-          >
-            <EditGestureSettingMenuText>제스처 제작</EditGestureSettingMenuText>
-          </EditGestureSettingMenuTextBox>
-          <EditGestureSettingMenuTextBox
-            onPress={() =>
-              navigate("PopularGesture", {
-                ipAddress: route.params.ipAddress,
-                userGestures: gestureData,
-              })
-            }
-          >
-            <EditGestureSettingMenuText>
-              자주 사용하는 제스처
-            </EditGestureSettingMenuText>
-          </EditGestureSettingMenuTextBox>
-          <EditGestureSettingMenuTextBox onPress={logoutAlert}>
-            <EditGestureSettingMenuText>로그아웃</EditGestureSettingMenuText>
-          </EditGestureSettingMenuTextBox>
+          <ToNextScreenTextButton
+            screen={"CreateGesture"}
+            text={"제스처 제작"}
+            props={{
+              ipAddress: route.params.ipAddress,
+            }}
+          />
+          <ToNextScreenTextButton
+            screen={"PopularGesture"}
+            text={"자주 사용하는 제스처"}
+            props={{
+              ipAddress: route.params.ipAddress,
+              userGestures: gestureData,
+            }}
+          />
+          <LogoutButton />
         </EditGestureSettingMenuBox>
       </EditGestureSettingButton>
       <EditGestureAnimationBox
@@ -181,7 +158,7 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
 
                           axios.post(
                             `${SERVER_PORT}/users/${
-                              JSON.parse(token.current).user.email
+                              JSON.parse(idToken).user.email
                             }/gestures`,
                             {
                               updatedGesture: { gesture: copy },
@@ -198,7 +175,6 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
                           });
                         }}
                       >
-                        <Picker.Item label="없음" value="" />
                         <Picker.Item
                           label="브라우저 뒤로가기"
                           value="goBackInBrowser"
@@ -242,7 +218,7 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
 
                     axios.post(
                       `${SERVER_PORT}/users/${
-                        JSON.parse(token.current).user.email
+                        JSON.parse(idToken).user.email
                       }/customGesture`,
                       { function: itemValue },
                       {
@@ -255,7 +231,6 @@ const EditGestureScreen = ({ navigation: { navigate }, route }) => {
                     setSelectedLanguage(itemValue);
                   }}
                 >
-                  <Picker.Item label="없음" value="" />
                   <Picker.Item
                     label="브라우저 뒤로가기"
                     value="goBackInBrowser"
@@ -292,12 +267,6 @@ const EditGestureContainer = styled.View`
   justify-content: center;
   align-items: center;
   background-color: #f3eee6;
-`;
-
-const EditGesturePreviousScreenButton = styled.TouchableOpacity`
-  position: absolute;
-  top: 50px;
-  left: 20px;
 `;
 
 const EditGestureAnimationBox = styled.View`
@@ -397,19 +366,6 @@ const EditGestureSettingMenuBox = styled.View`
   background-color: white;
   border: 1px solid #888888;
   border-radius: 10px;
-`;
-
-const EditGestureSettingMenuTextBox = styled.TouchableOpacity`
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  width: 180px;
-  background-color: transparent;
-`;
-
-const EditGestureSettingMenuText = styled.Text`
-  padding: 10px 15px;
-  font-size: 18px;
 `;
 
 export default EditGestureScreen;

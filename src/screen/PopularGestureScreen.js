@@ -1,25 +1,15 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Alert } from "react-native";
 import styled from "styled-components/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import React from "react";
+import LogoutButton from "../components/LogoutButton";
+import ToNextScreenTextButton from "../components/ToNextScreenTextButton";
+import ToPreviousScreenButton from "../components/ToPreviousScreenButton";
 
-const PopularGestureScreen = ({ navigation, route }) => {
+const PopularGestureScreen = ({ route }) => {
   const [isSettingButtonPressed, setIsSettingButtonPressed] = useState(false);
   const [gestureData, setGestureData] = useState([]);
-
-  const logoutAlert = async () => {
-    await AsyncStorage.clear();
-
-    Alert.alert("Logout", "로그아웃이 완료되었습니다.", [
-      {
-        text: "확인",
-        onPress: () => navigation.navigate("Main"),
-      },
-    ]);
-  };
 
   useFocusEffect(
     React.useCallback(() => {
@@ -41,13 +31,10 @@ const PopularGestureScreen = ({ navigation, route }) => {
 
   return (
     <PopularGestureContainer>
-      <PopularGesturePreviousScreenButton
-        onPress={() =>
-          navigation.navigate("TouchPad", { ipAddress: route.params.ipAddress })
-        }
-      >
-        <Ionicons name="arrow-back" size={32} color="#7e94ae" />
-      </PopularGesturePreviousScreenButton>
+      <ToPreviousScreenButton
+        screen={"TouchPad"}
+        props={{ ipAddress: route.params.ipAddress }}
+      />
       <PopularGestureSettingButton
         onPress={() => setIsSettingButtonPressed(!isSettingButtonPressed)}
       >
@@ -59,22 +46,14 @@ const PopularGestureScreen = ({ navigation, route }) => {
               : { display: "none", transform: [{ translateY: -80 }] }
           }
         >
-          <PopularGestureSettingMenuTextBox
-            onPress={() =>
-              navigation.navigate("EditGesture", {
-                ipAddress: route.params.ipAddress,
-              })
-            }
-          >
-            <PopularGestureSettingMenuText>
-              제스처 편집
-            </PopularGestureSettingMenuText>
-          </PopularGestureSettingMenuTextBox>
-          <PopularGestureSettingMenuTextBox onPress={logoutAlert}>
-            <PopularGestureSettingMenuText>
-              로그아웃
-            </PopularGestureSettingMenuText>
-          </PopularGestureSettingMenuTextBox>
+          <ToNextScreenTextButton
+            screen={"EditGesture"}
+            text={"제스처 편집"}
+            props={{
+              ipAddress: route.params.ipAddress,
+            }}
+          />
+          <LogoutButton />
         </PopularGestureSettingMenuBox>
       </PopularGestureSettingButton>
       <PopularGestureTextBox>
@@ -115,12 +94,6 @@ const PopularGestureContainer = styled.View`
   justify-content: center;
   align-items: center;
   background-color: #f3eee6;
-`;
-
-const PopularGesturePreviousScreenButton = styled.TouchableOpacity`
-  position: absolute;
-  top: 50px;
-  left: 20px;
 `;
 
 const PopularGestureTextBox = styled.View`
@@ -199,19 +172,6 @@ const PopularGestureSettingMenuBox = styled.View`
   background-color: white;
   border: 1px solid #888888;
   border-radius: 10px;
-`;
-
-const PopularGestureSettingMenuTextBox = styled.TouchableOpacity`
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  width: 180px;
-  background-color: transparent;
-`;
-
-const PopularGestureSettingMenuText = styled.Text`
-  padding: 10px 15px;
-  font-size: 18px;
 `;
 
 const LoadingText = styled.Text`
