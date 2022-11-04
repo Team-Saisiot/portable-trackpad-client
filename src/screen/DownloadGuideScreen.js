@@ -6,8 +6,10 @@ import { Alert } from "react-native";
 import { useState } from "react";
 import { SERVER_PORT } from "@env";
 import COLORS from "../constants/COLORS";
+import ToNextScreenButton from "../components/ToNextScreenButton";
+import ToPreviousScreenButton from "../components/ToPreviousScreenButton";
 
-const DownloadGuideScreen = ({ navigation }) => {
+const DownloadGuideScreen = () => {
   const [email, setUserEmail] = useState("");
   const [isFocus, setIsFocus] = useState(false);
 
@@ -54,27 +56,9 @@ const DownloadGuideScreen = ({ navigation }) => {
     }
   };
 
-  const toNextScreen = async () => {
-    const idToken = await AsyncStorage.getItem("idToken");
-
-    if (idToken) {
-      navigation.navigate("NetworkGuide");
-    } else {
-      Alert.alert("Need Login", "로그인이 필요합니다.", [
-        {
-          text: "확인",
-        },
-      ]);
-    }
-  };
-
   return (
     <DownloadGuideContainer>
-      <DownloadGuidePreviousScreenButton
-        onPress={() => navigation.navigate("Main")}
-      >
-        <Ionicons name="arrow-back" size={32} color={COLORS.MAIN_COLOR} />
-      </DownloadGuidePreviousScreenButton>
+      <ToPreviousScreenButton screen={"Main"} />
       <Ionicons name="download-outline" size={150} color={COLORS.MAIN_COLOR} />
       <DownloadGuideTitleBox>
         <DownloadGuideTitleText>
@@ -111,11 +95,7 @@ const DownloadGuideScreen = ({ navigation }) => {
           onPress={() => validateEmail(email)}
         />
       </DownloadGuideUserEmailBox>
-      <DownloadGuideNextScreenButton onPress={toNextScreen}>
-        <DownloadGuideNextScreenButtonText>
-          Next
-        </DownloadGuideNextScreenButtonText>
-      </DownloadGuideNextScreenButton>
+      <ToNextScreenButton screen={"NetworkGuide"} />
     </DownloadGuideContainer>
   );
 };
@@ -133,12 +113,6 @@ const DownloadGuideTitleText = styled.Text`
 
 const DownloadGuideDescriptionText = styled.Text`
   font-size: 12px;
-`;
-
-const DownloadGuidePreviousScreenButton = styled.TouchableOpacity`
-  position: absolute;
-  top: 50px;
-  left: 20px;
 `;
 
 const DownloadGuideTitleBox = styled.View`
@@ -172,22 +146,6 @@ const DownloadGuideUserEmailPlaceHolder = styled.Text`
   position: absolute;
   font-size: 15px;
   color: #999999;
-`;
-
-const DownloadGuideNextScreenButton = styled.TouchableOpacity`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: row;
-  margin-top: 30px;
-  padding: 10px 60px;
-  background-color: ${COLORS.MAIN_COLOR};
-  border-radius: 10px;
-`;
-
-const DownloadGuideNextScreenButtonText = styled.Text`
-  font-size: 20px;
-  color: ${COLORS.BACKGROUND_COLOR};
 `;
 
 export default DownloadGuideScreen;
