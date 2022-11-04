@@ -13,6 +13,7 @@ const PcListScreen = ({ navigation }) => {
   const [recentPC, setRecentPc] = useState(null);
   const [connectableIpList, setConnectableIpList] = useState([]);
   const [isSettingButtonPressed, setIsSettingButtonPressed] = useState(false);
+  const [customIp, setCustomIp] = useState("");
 
   const allConnectableIPs = useRef([]);
 
@@ -133,31 +134,51 @@ const PcListScreen = ({ navigation }) => {
           </PopularGestureSettingMenuTextBox>
         </PopularGestureSettingMenuBox>
       </PopularGestureSettingButton>
-      <PcListTitleBox>
-        <PcListTitleText>Select PC</PcListTitleText>
-      </PcListTitleBox>
-      <PcListBox>
-        <ScrollView>
-          {connectableIpList?.map((value, index) => {
-            return (
-              <PcListPc
-                key={index}
-                onPress={() => {
-                  connectPc(value);
-                  navigation.navigate("TouchPad", { ipAddress: value?.ip });
-                }}
-              >
-                <Ionicons
-                  name="desktop-sharp"
-                  size={30}
-                  color={COLORS.MAIN_COLOR}
-                />
-                <PcListPcName>{value?.ip}</PcListPcName>
-              </PcListPc>
-            );
-          })}
-        </ScrollView>
-      </PcListBox>
+      <PcListHorizonBox
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={true}
+      >
+        <PcListBox>
+          <PcListTitleBox>
+            <PcListTitleText>Select PC</PcListTitleText>
+          </PcListTitleBox>
+          <PcListIps>
+            {connectableIpList?.map((value, index) => {
+              return (
+                <PcListPc
+                  key={index}
+                  onPress={() => {
+                    connectPc(value);
+                    navigation.navigate("TouchPad", { ipAddress: value?.ip });
+                  }}
+                >
+                  <Ionicons
+                    name="desktop-sharp"
+                    size={30}
+                    color={COLORS.MAIN_COLOR}
+                  />
+                  <PcListPcName>{value?.ip}</PcListPcName>
+                </PcListPc>
+              );
+            })}
+          </PcListIps>
+        </PcListBox>
+        <PcListCustomIpBox>
+          <PcListTitleBox>
+            <PcListTitleText>Custom IP</PcListTitleText>
+          </PcListTitleBox>
+          <PcListCustomIpInput onChangeText={setCustomIp}></PcListCustomIpInput>
+          <PcListCustomIpButton
+            onPress={() => {
+              connectPc({ ip: customIp, name: customIp });
+              navigation.navigate("TouchPad", { ipAddress: customIp });
+            }}
+          >
+            <PcListCustomIpButtonText>Connect</PcListCustomIpButtonText>
+          </PcListCustomIpButton>
+        </PcListCustomIpBox>
+      </PcListHorizonBox>
       <PcListHorizonLine />
       <PcListTitleBox>
         <PcListTitleText>Recent PC</PcListTitleText>
@@ -204,11 +225,52 @@ const PcListTitleBox = styled.View`
   z-index: -1;
 `;
 
+const PcListHorizonBox = styled.ScrollView`
+  max-height: 300px;
+  width: 210px;
+  overflow-x: scroll;
+`;
+
+const PcListIps = styled.ScrollView`
+  height: 200px;
+  width: 200px;
+`;
+
+const PcListCustomIpBox = styled.View`
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  width: 210px;
+`;
+
+const PcListCustomIpInput = styled.TextInput`
+  padding: 5px 5px;
+  width: 180px;
+  border: 1px solid #333333;
+`;
+
+const PcListCustomIpButton = styled.TouchableOpacity`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  margin-top: 30px;
+  padding: 10px 40px;
+  background-color: ${COLORS.MAIN_COLOR};
+  border-radius: 10px;
+`;
+
+const PcListCustomIpButtonText = styled.Text`
+  font-size: 15px;
+  color: ${COLORS.BACKGROUND_COLOR};
+`;
+
 const PcListBox = styled.View`
   justify-content: flex-start;
   align-items: center;
+  margin: 0px 5px;
   height: 150px;
-  width: 200px;
+  width: 200px; ;
 `;
 
 const PcListPc = styled.TouchableOpacity`
