@@ -1,5 +1,4 @@
 import React, { useRef, useState } from "react";
-import { Alert, ScrollView } from "react-native";
 import styled from "styled-components/native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -8,24 +7,16 @@ import { SERVER_PORT, PACKAGE_SERVER_PORT } from "@env";
 import { io } from "socket.io-client";
 import { useFocusEffect } from "@react-navigation/native";
 import COLORS from "../constants/COLORS";
+import ToPreviousScreenButton from "../components/ToPreviousScreenButton";
+import LogoutButton from "../components/LogoutButton";
 
 const PcListScreen = ({ navigation }) => {
   const [recentPC, setRecentPc] = useState(null);
   const [connectableIpList, setConnectableIpList] = useState([]);
   const [isSettingButtonPressed, setIsSettingButtonPressed] = useState(false);
+  const [customIp, setCustomIp] = useState("");
 
   const allConnectableIPs = useRef([]);
-
-  const logoutAlert = async () => {
-    await AsyncStorage.clear();
-
-    Alert.alert("Logout", "로그아웃이 완료되었습니다.", [
-      {
-        text: "확인",
-        onPress: () => navigation.navigate("Main"),
-      },
-    ]);
-  };
 
   const connectPc = async (pc) => {
     try {
@@ -101,11 +92,7 @@ const PcListScreen = ({ navigation }) => {
 
   return (
     <PcListContainer>
-      <PcListPreviousScreenButton
-        onPress={() => navigation.navigate("NetworkGuide")}
-      >
-        <Ionicons name="arrow-back" size={32} color={COLORS.MAIN_COLOR} />
-      </PcListPreviousScreenButton>
+      <ToPreviousScreenButton screen={"NetworkGuide"} />
       <PopularGestureSettingButton
         onPress={() => setIsSettingButtonPressed(!isSettingButtonPressed)}
       >
@@ -126,38 +113,54 @@ const PcListScreen = ({ navigation }) => {
               Select PC 새로고침
             </PopularGestureSettingMenuText>
           </PopularGestureSettingMenuTextBox>
-          <PopularGestureSettingMenuTextBox onPress={logoutAlert}>
-            <PopularGestureSettingMenuText>
-              로그아웃
-            </PopularGestureSettingMenuText>
-          </PopularGestureSettingMenuTextBox>
+          <LogoutButton />
         </PopularGestureSettingMenuBox>
       </PopularGestureSettingButton>
-      <PcListTitleBox>
-        <PcListTitleText>Select PC</PcListTitleText>
-      </PcListTitleBox>
-      <PcListBox>
-        <ScrollView>
-          {connectableIpList?.map((value, index) => {
-            return (
-              <PcListPc
-                key={index}
-                onPress={() => {
-                  connectPc(value);
-                  navigation.navigate("TouchPad", { ipAddress: value?.ip });
-                }}
-              >
-                <Ionicons
-                  name="desktop-sharp"
-                  size={30}
-                  color={COLORS.MAIN_COLOR}
-                />
-                <PcListPcName>{value?.ip}</PcListPcName>
-              </PcListPc>
-            );
-          })}
-        </ScrollView>
-      </PcListBox>
+      <PcListHorizonBox
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={true}
+      >
+        <PcListBox>
+          <PcListTitleBox>
+            <PcListTitleText>Select PC</PcListTitleText>
+          </PcListTitleBox>
+          <PcListIps>
+            {connectableIpList?.map((value, index) => {
+              return (
+                <PcListPc
+                  key={index}
+                  onPress={() => {
+                    connectPc(value);
+                    navigation.navigate("TouchPad", { ipAddress: value?.ip });
+                  }}
+                >
+                  <Ionicons
+                    name="desktop-sharp"
+                    size={30}
+                    color={COLORS.MAIN_COLOR}
+                  />
+                  <PcListPcName>{value?.ip}</PcListPcName>
+                </PcListPc>
+              );
+            })}
+          </PcListIps>
+        </PcListBox>
+        <PcListCustomIpBox>
+          <PcListTitleBox>
+            <PcListTitleText>Custom IP</PcListTitleText>
+          </PcListTitleBox>
+          <PcListCustomIpInput onChangeText={setCustomIp}></PcListCustomIpInput>
+          <PcListCustomIpButton
+            onPress={() => {
+              connectPc({ ip: customIp, name: customIp });
+              navigation.navigate("TouchPad", { ipAddress: customIp });
+            }}
+          >
+            <PcListCustomIpButtonText>Connect</PcListCustomIpButtonText>
+          </PcListCustomIpButton>
+        </PcListCustomIpBox>
+      </PcListHorizonBox>
       <PcListHorizonLine />
       <PcListTitleBox>
         <PcListTitleText>Recent PC</PcListTitleText>
@@ -190,12 +193,6 @@ const PcListTitleText = styled.Text`
   font-size: 50px;
 `;
 
-const PcListPreviousScreenButton = styled.TouchableOpacity`
-  position: absolute;
-  top: 50px;
-  left: 20px;
-`;
-
 const PcListTitleBox = styled.View`
   justify-content: center;
   align-items: center;
@@ -204,11 +201,52 @@ const PcListTitleBox = styled.View`
   z-index: -1;
 `;
 
+const PcListHorizonBox = styled.ScrollView`
+  max-height: 300px;
+  width: 210px;
+  overflow-x: scroll;
+`;
+
+const PcListIps = styled.ScrollView`
+  height: 200px;
+  width: 200px;
+`;
+
+const PcListCustomIpBox = styled.View`
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  width: 210px;
+`;
+
+const PcListCustomIpInput = styled.TextInput`
+  padding: 5px 5px;
+  width: 180px;
+  border: 1px solid #333333;
+`;
+
+const PcListCustomIpButton = styled.TouchableOpacity`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  margin-top: 30px;
+  padding: 10px 40px;
+  background-color: ${COLORS.MAIN_COLOR};
+  border-radius: 10px;
+`;
+
+const PcListCustomIpButtonText = styled.Text`
+  font-size: 15px;
+  color: ${COLORS.BACKGROUND_COLOR};
+`;
+
 const PcListBox = styled.View`
   justify-content: flex-start;
   align-items: center;
+  margin: 0px 5px;
   height: 150px;
-  width: 200px;
+  width: 200px; ;
 `;
 
 const PcListPc = styled.TouchableOpacity`

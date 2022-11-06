@@ -1,31 +1,13 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Alert } from "react-native";
 import styled from "styled-components/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import COLORS from "../constants/COLORS";
+import ToNextScreenButton from "../components/ToNextScreenButton";
+import ToPreviousScreenButton from "../components/ToPreviousScreenButton";
 
-const NetworkGuideScreen = ({ navigation }) => {
-  const toNextScreen = async () => {
-    const idToken = await AsyncStorage.getItem("idToken");
-
-    if (idToken) {
-      navigation.navigate("PcList");
-    } else {
-      Alert.alert("Need Login", "로그인이 필요합니다.", [
-        {
-          text: "확인",
-        },
-      ]);
-    }
-  };
-
+const NetworkGuideScreen = () => {
   return (
     <NetworkGuideContainer>
-      <NetworkGuidePreviousScreenButton
-        onPress={() => navigation.navigate("DownloadGuide")}
-      >
-        <Ionicons name="arrow-back" size={32} color={COLORS.MAIN_COLOR} />
-      </NetworkGuidePreviousScreenButton>
+      <ToPreviousScreenButton screen={"DownloadGuide"} />
       <Ionicons name="wifi" size={150} color={COLORS.MAIN_COLOR} />
       <NetworkGuideTextBox>
         <NetworkGuideText>본 어플리케이션은</NetworkGuideText>
@@ -33,9 +15,7 @@ const NetworkGuideScreen = ({ navigation }) => {
         <NetworkGuideText>서로 같은 네트워크에</NetworkGuideText>
         <NetworkGuideText>연결되어있어야 합니다.</NetworkGuideText>
       </NetworkGuideTextBox>
-      <NetworkGuideNextButton onPress={toNextScreen}>
-        <NetworkGuideNextButtonText>Next</NetworkGuideNextButtonText>
-      </NetworkGuideNextButton>
+      <ToNextScreenButton screen={"PcList"} />
     </NetworkGuideContainer>
   );
 };
@@ -45,12 +25,6 @@ const NetworkGuideContainer = styled.View`
   justify-content: center;
   align-items: center;
   background-color: ${COLORS.BACKGROUND_COLOR};
-`;
-
-const NetworkGuidePreviousScreenButton = styled.TouchableOpacity`
-  position: absolute;
-  top: 50px;
-  left: 20px;
 `;
 
 const NetworkGuideTextBox = styled.View`
@@ -65,22 +39,6 @@ const NetworkGuideText = styled.Text`
   font-size: 20px;
   text-align: center;
   color: #333333;
-`;
-
-const NetworkGuideNextButton = styled.TouchableOpacity`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: row;
-  margin-top: 30px;
-  padding: 10px 60px;
-  background-color: ${COLORS.MAIN_COLOR};
-  border-radius: 10px;
-`;
-
-const NetworkGuideNextButtonText = styled.Text`
-  font-size: 20px;
-  color: ${COLORS.BACKGROUND_COLOR};
 `;
 
 export default NetworkGuideScreen;
