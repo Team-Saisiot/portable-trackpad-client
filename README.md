@@ -124,7 +124,7 @@
 
 ### `🎥 기능 시연 영상`
 
-### Portable TrackPad
+## Portable TrackPad
 <details>
   <summary>커서 이동</summary>
   
@@ -182,7 +182,9 @@ https://user-images.githubusercontent.com/99075014/199185540-a9fb2cbd-2cb8-4c9c-
 
 </details>
 
-### Gesture Drawing
+<br/>
+
+## Gesture Drawing
 
 <details>
   <summary>제스처로 도형 생성 기능 (With Portable TrackPad)</summary>
