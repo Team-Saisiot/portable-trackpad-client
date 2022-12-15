@@ -1,50 +1,42 @@
 # Portable TrackPad
 
-항상 들고다니는 스마트폰을 매직 트랙패드처럼 사용할 수 있다면 어떨까? 에서 출발한 프로젝트
+항상 들고 다니는 스마트폰을 매직 트랙패드처럼 사용할 수 있다면 어떨까? 에서 출발한 프로젝트
 **Portable TrackPad**입니다. 
 
 사용자는 Portable TrackPad를 이용해 스마트폰을 트랙패드처럼 사용할 수 있으며, 제스처를 사용해 볼륨 조절과 탭 넘기기 같은 기능을 사용할 수 있습니다. 또한 Gesture Drawing 웹페이지에서 다른 사용자들과 함께 그림을 그리고, 제스처를 이용해 도형을 생성하거나 크기를 조절할 수 있습니다.
 
 > Deploy(Web) : https://gesture-drawing.online
-#
-<br/>
-<br/>
 
-### `📃 프로젝트 구조`
+<br>
 
-### Portable TrackPad
+## 📃 프로젝트 구조
 
-- 1개의 모바일 어플리케이션과 2개의 서버(Sever, Package)로 구성
-    - React Native를 통해 커서 조작 데이터를 Socket으로 보낼 모바일 어플리케이션
-    - 모바일 어플리케이션과 트랙패드 움직임 데이터를 Socket으로 받을 Node.js Package
-    - 사용자 정보등 다양한 DB정보에 접근할 수 있는 Node.js Express Server
+### Portable TrackPad: 1개의 모바일 애플리케이션과 2개의 서버(Sever, Package)로 구성
+- React Native를 통해 커서 조작 데이터를 Socket으로 보낼 모바일 애플리케이션
+- 모바일 애플리케이션과 트랙패드 움직임 데이터를 Socket으로 받을 Node.js Package
+- 사용자 정보 등 다양한 DB 정보에 접근할 수 있는 Node.js Express Server
 
-### Gesture Drawing
+### Gesture Drawing: 1개의 웹 애플리케이션과 Socket 통신을 담당하는 1개의 서버 (Package)로 구성
+- React를 통해 드로잉 기능을 구현한 웹 애플리케이션
+- 웹 애플리케이션에서 전달해준 데이터를 Socket으로 사용자들에게 전달하는 Package
 
-- 1개의 웹 어플리케이션과 Socket 통신을 담당하는 1개의 서버 (Package)로 구성
-    - React를 통해 드로잉 기능을 구현한 웹 어플리케이션
-    - 웹 어플리케이션에서 전달해준 데이터를 Socket으로 사용자들에게 전달하는 Package
-#
-<br/>
 <br/>
 
-### `🗄 레포지토리 링크`
+## 🗄 레포지토리 링크
 
 - [Frontend(Mobile)](https://github.com/Team-Saisiot/portable-trackpad-client)
 - [Frontend(Web)](https://github.com/Team-Saisiot/portable-trackpad-gesture-drawing)
 - [Backend](https://github.com/Team-Saisiot/portable-trackpad-server)
 - [Package](https://github.com/Team-Saisiot/portable-trackpad-package)
 
-#
-<br/>
 <br/>
 
-### `⚙️ 셋업 설명`
-
-### Frontend(Mobile)
+## ⚙️ 셋업 설명
+<details>
+  <summary>Frontend(Mobile)</summary>
 
 1. [해당 Repository](https://github.com/Team-Saisiot/portable-trackpad-client)를 git clone을 한다.
-2. 환견변수 파일(.env)을 생성하고 아래와 같은 형식으로 입력한다.
+2. 환경변수 파일(.env)을 생성하고 아래와 같은 형식으로 입력한다.
     
     ```jsx
     SERVER_PORT=SERVER_PORT
@@ -60,16 +52,16 @@
     $ npm start
     ```
     
-4. Android의 경우 PlayStore에서 `Expo`를 IOS의 경우 AppStore에서 `Expo Go`를 다운로드 받는다.
+4. Android의 경우 PlayStore에서 `Expo`를, IOS의 경우 AppStore에서 `Expo Go`를 다운로드 받는다.
 5. 해당 Expo어플리케이션에서 QR코드인식 모드를 켠다.
 6. 프로젝트에서 표시된 QR코드를 스캔한다.
 
-<br/>
-
-### Frontend(Web)
+</details>
+<details>
+  <summary>Frontend(Web)</summary>
 
 1. [해당 Repository](https://github.com/Team-Saisiot/portable-trackpad-gesture-drawing)를 git clone을 한다.
-2. 환견변수 파일(.env)을 생성하고 아래와 같은 형식으로 입력한다.
+2. 환경변수 파일(.env)을 생성하고 아래와 같은 형식으로 입력한다.
     
     ```jsx
     REACT_APP_SERVER_IPADDRESS=REACT_APP_SERVER_IPADDRESS
@@ -84,11 +76,11 @@
     $ npm install
     $ npm start
     ```
-    
-<br/>
+</details>
 
-### Backend
-
+<details>
+  <summary>Backend</summary>
+  
 1. [해당 Repository](https://github.com/Team-Saisiot/portable-trackpad-client)를 git clone을 한다.
 2. 환경변수 파일(.env)을 생성하고 아래와 같은 형식으로 입력한다.
     
@@ -107,10 +99,12 @@
     $ npm install
     $ npm run dev
     ```
-<br/>  
 
-### Package
+</details>  
 
+<details>
+  <summary>Package</summary>
+  
 1. [해당 Repository](https://github.com/Team-Saisiot/portable-trackpad-client)를 git clone을 한다.
 2. 해당 프로젝트 폴더 내에서 아래의 명령어를 실행한다.
     
@@ -118,11 +112,10 @@
     $ npm install
     $ npm run dev
     ```
-#
-<br/>
+</details>
 <br/>    
 
-### `🎥 기능 시연 영상`
+## 🎥 기능 시연 영상
 
 ## Portable TrackPad
 <details>
@@ -181,7 +174,6 @@ https://user-images.githubusercontent.com/99075014/199181948-ce32368d-2462-41c2-
 https://user-images.githubusercontent.com/99075014/199185540-a9fb2cbd-2cb8-4c9c-b312-698b54467a5b.mov
 
 </details>
-
 <br/>
 
 ## Gesture Drawing
@@ -223,55 +215,29 @@ https://user-images.githubusercontent.com/99075014/200184725-27b0084b-0bdf-4d0a-
 
 </details>
 
-#
-<br/>
 <br/>
 
-### `🛠 기술 스택`
+## 🛠 기술 스택
 
-## Frontend(mobile)
-
+## Frontend(web + mobile)
+- React
 - React Native
 - React Native Gesture handler
-- Socket io(Client)
-- Styled Compontents
-- Axios
-
-## Frontend(web)
-
-- React
-- Canvas
-- Socket io(Client)
 - Redux-Toolkit
-- Axios
+- Socket io(Client)
+- Canvas
 
-## Backend
-
+## Backend(package + server)
 - Node.js
 - Express
 - Google Oauth
 - MongoDB
-- Mongoose
-- Local-Devices
-- Nodemailer
-
-## Package
-
-- Node.js
-- Express
 - Socket io(server)
 - Robot.js
 
-## Depoly
-
-- Netlify (Frontend)
-- AWS Elastic Beanstalk (Backend)
-
-#
-<br/>
 <br/>
 
-### `🗓 프로젝트 기간`
+## 🗓 프로젝트 기간
 
 **2022년 10월 10일 ~ 10월 29일**
 
@@ -279,35 +245,25 @@ https://user-images.githubusercontent.com/99075014/200184725-27b0084b-0bdf-4d0a-
 - 10월 14일 ~ 10월 29일 : 개발 진행, 배포, 테스트 작성
 - 10월 21일 ~ 10월 29일 : 추가 프로젝트(Gesture Drawing)기획 및 개발 진행
 
-#
-<br/>
 <br/>
 
-### `💡 핵심 구현 사항`
-
-<details>
-  <summary>원활한 사용자 경험을 위한 레이턴시 개선</summary>
+## 💡 핵심 구현 사항
   
-## 충분히 빠른 레이턴시 확보의 필요성
+## 1. 레이턴시 개선
+### [충분히 빠른 레이턴시 확보의 필요성]
 
- 본 프로젝트에서 가장 핵심 기능은 Socket을 통한 PC와 모바일간의 데이터 통신이다. 
-우리가 이 부분을 구현하면서 가장 고심했던 부분은 `얼마나 Socket통신을 원활한 상태로 유지할 수 있을까?`였다. 
+본 프로젝트에서 가장 핵심 기능은 Socket을 통한 PC와 모바일간의 데이터 통신이다. 
+우리가 이 부분을 구현하면서 가장 고심했던 부분은 얼마나 Socket통신을 원활한 상태로 유지할 수 있을까? 였다. 
 
- 사용자가 터치패드를 사용하면서 `가장 크게 체감되는 불편함`은 PC와 터치 동작간의 입출력 시간의 딜레이
-즉, `충분히 빠르지 못한 레이턴시`이다. 
+사용자가 터치패드를 사용하면서 가장 크게 체감되는 불편함은 PC와 터치 동작간의 입출력 시간의 딜레이. 즉, `충분히 빠르지 못한 레이턴시`이다. 
 
- 터치패드는 연속된 동작을 인식해야하는 입력기기이기 때문에 레이턴시에 민감하다. 만약 20ms의 아주 짧은 딜레이가 생기더라도 그것을 사용하게될 사용자의 입장에서는 상당히 크게 느껴진다. 
+터치패드는 연속된 동작을 인식해야하는 입력기기이기 때문에 레이턴시에 민감하다. 만약 20ms의 아주 짧은 딜레이가 생기더라도 그것을 사용하게될 사용자의 입장에서는 상당히 크게 느껴진다. 
 
- 때문에 `사용자가 불편함을 느끼지 않을만큼 충분히 빠른 레이턴시를 확보`하는것이 중요했다. 
+때문에 `사용자가 불편함을 느끼지 않을만큼 충분히 빠른 레이턴시를 확보`하는것이 중요했다. 
 
-<br/>
 
-## Socket 통신의 흐름 파악
-
- 우선 원활한 Socket통신 구조를 만들기 위해서 우리 프로젝트의 Socket통신 흐름을 파악해보기로 했다.
-그 흐름을 파악한 다음 어느 구간에서 딜레이가 생길지를 파악해보기 위함이었다.
-
-Portable TrackPad의 전체적인 Socket통신 구조는 다음과 같았다.
+### [Socket 통신의 흐름 파악]
+Socket통신 흐름을 통해 어느 구간에서 딜레이가 생길지를 파악해보았다.
 
 1. `터치 인식` : 사용자가 모바일 디바이스 스크린에 터치를 한다.
 2. `터치 이벤트 감지` : 해당 터치에 해당하는 이벤트를 감지한다.
@@ -315,13 +271,8 @@ Portable TrackPad의 전체적인 Socket통신 구조는 다음과 같았다.
 4. `Socket 전송`: 해당 기능에 대한 데이터를 Socket을 통해 Package로 전송한다.
 5. `해당 기능 실행`: Socket을 통해 전달받은 데이터를 기반으로 PC가 동작한다.
 
- 
-
- 이러한 흐름에서 각 구간을 넘을때마다 딜레이가 생길것이라 판단하였다. 때문에 이 과정에서 생기는 딜레이를 최소화하는 방향으로 개선해나갔다.
-
-<br/>
-
-## 구간별 조치 사항
+<details>
+  <summary>위의 딜레이 구간에서의 레이턴시 개선 조치 사항</summary>
 
 ### `1. 터치 인식`
 
@@ -329,8 +280,6 @@ Portable TrackPad의 전체적인 Socket통신 구조는 다음과 같았다.
 
  프로젝트 기획 초기에는 PWA를 활용하여 개발을 진행하려했다. 하지만 PWA는 엄밀히 말해서 Native한 모바일 어플리케이션이 아니고 단지 웹을 앱처럼 보이게 해줄 뿐이다.  
  하지만 React Native를 통해 개발하면 보다 Native한 터치를 구현할 수 있을것이라 판단하였다. 때문에 모바일 디바이스가 터치를 인식함에 있어서 보다 정밀하고 빠른 인식을 위해 React Native를 선택하였다.
-
-<br/>
 
 ### `2. 터치 이벤트 감지`
 
@@ -342,15 +291,12 @@ Portable TrackPad의 전체적인 Socket통신 구조는 다음과 같았다.
 
 즉, 터치 이벤트를 감지하는 연산에서의 시간을 줄임으로써 딜레이를 줄였다
 
-<br/>
 
 ### `3. 실행 기능 변환`
 
 ***조치 사항: 없음***
 
  해당 구간은 단지 터치 이벤트가 실행되었을때 해당 기능을 나타내는 문자열, 좌표값을 반환하는 코드만으로 이루어져있다. 때문에 딜레이에 큰 지장을 주지않을것이라 판단하여 별다른 조치를 취하지 않았다.
-
-<br/>
 
 ### `4. Socket 전송`
 
@@ -368,109 +314,61 @@ Portable TrackPad의 전체적인 Socket통신 구조는 다음과 같았다.
 
 즉, Socket을 통해 전달하는 데이터는 `[”기능”, x좌표, y좌표]`라는 아주 단순한 정보만을 담도록 코드를 제작하였다.
 
-***실패한 조치 사항: 데이터 전달 빈도 조정***
-
- 본 프로젝트에서는 터치를 감지할때마다 해당하는 데이터가 Socket으로 전송된다. 
-그래서 커서를 이동하는 기능을 실행하면 손가락을 움직일때마다 해당하는 변화값이 Socket으로 전송된다. 하지만 이 전송의 빈도가 너무 많으면 레이턴시에 문제가 생기지 않을까 생각했다.
-
-때문에 count를 통해서 Socket통신의 빈도를 조절하면 될것이라 생각하였다.
-
-해당 방법을 통해 구현해보았으나 동작이 툭툭 끊기는 느낌이 났었다.
-사용자가 오히려 불편함을 느낄것이라 생각하여 해당 조치 사항은 반영하지 않기로 하였다.
-
-<br/>
 
 ### `5. 해당 기능 실행`
 
 조치 사항: if문이 아닌 switch문 사용
 
  해당 구간에서는 Socket을 통해 받은 데이터를 분류하여 실행한다.
-기존에는 if else를 사용하여 데이터를 분류하려했다. 하지만 switch case가 단순 분류에서는 더욱 나은 성능을 보인다는 [자료를 보게되었다.](http://www.blackwasp.co.uk/SpeedTestIfElseSwitch.aspx) 때문에 if else가 아닌 switch case를 사용하기로 결정하였다.
-
-<br/>
-<br/>
+기존에는 if else를 사용하여 데이터를 분류하려했다. 하지만 switch case가 단순 분류에서는 더욱 나은 성능을 보인다는 [자료](http://www.blackwasp.co.uk/SpeedTestIfElseSwitch.aspx)를 보게되었다. 때문에 if else가 아닌 switch case를 사용하기로 결정하였다.
 
 </details>
+<br>
 
-
-<details>
-  <summary>Socket을 통한 Undo, Redo 동기화</summary>
+## 2. Socket을 통한 Undo, Redo 동기화
   
-## Drawing과 Figure의 구조
+<details>
+<summary>[Local 환경에서의 Undo, Redo 구현]</summary>
 
- Gesture Drawing에서 펜그리기와 도형그리기기능은 다음과 같은 로직으로 구현되었다.
-
-<br/>
-
-1. 해당하는 개체의 정보가 담긴 배열이 있다
-    1. 펜의 경우 `[[시작점x, 시작점,y], [종료점x, 종료점y], 색상, 두께]]`라는 정보를 담고있다.
-    2. 도형의 경우 `[x좌표, y좌표, 너비, 높이, 색상, 도형의 종류]`라는 정보를 담고있다
-2. `Objects`배열에 해당하는 개체를 저장한다.
-3. Objects 배열의 내용에 변화가 생기면
-Objects의 내용을 Canvas에 렌더링해주는 함수 `Visualizer`를 실행한다.
-
-<br/>
-
-## Local 환경에서의 Undo, Redo 구현
-
- 단순히 자신의 그리기 기록을 Undo, Redo를 하는것은 구현에 큰 어려움이 없을것으로 판단하였다. 
+단순히 자신의 그리기 기록을 Undo, Redo를 하는것은 구현에 큰 어려움이 없을것으로 판단하였다. 
 기본적으로 개체들의 정보가 담긴 `Objects`를 활용하여 Local환경에서의 Undo, Redo를 구현해보았다.
 
-<br/>
-
-1. 사용자가 개체를 생성, 조작하면 해당하는 동작수행 후 
-그 사용자의 Objects를 `UndoStore`배열에 추가한다.
-2. 사용자가 `Undo`를 실행하면 `UndoStore`에 저장된 Objects중 가장 최근것을 가져와
-사용자의 Objects에 덮어씌운다.
-덮어씌워지기 전의 Objects는 `RedoStore`에 저장한다.
+1. 사용자가 개체를 생성, 조작하면 해당하는 동작수행 후 그 사용자의 Objects를 `UndoStore`배열에 추가한다.
+2. 사용자가 `Undo`를 실행하면 `UndoStore`에 저장된 Objects중 가장 최근것을 가져와 사용자의 Objects에 덮어씌운다. 덮어씌워지기 전의 Objects는 `RedoStore`에 저장한다.
 3. 덮어씌워진 Objects에 맞게 렌더링(Visualizer)한다. 
-4. 사용자가 `Redo`를 실행하면 `RedoStore`에 저장된 Objects중 가장 최근것을 가져와 
-사용자의 Objects에 덮어씌운다.
+4. 사용자가 `Redo`를 실행하면 `RedoStore`에 저장된 Objects중 가장 최근것을 가져와 사용자의 Objects에 덮어씌운다.
+</details>
 
-<br/>
+<details>
+<summary>[Socket 통신 환경에서의 Undo, Redo 구현]</summary>
 
-## Socket 통신 환경에서의 Undo, Redo 구현
-
- 자신의 Undo, Redo를 다른 사람들과 공유하여 서로의 History가 동기화되도록 구현하기 위해서는 고려해야할 사항이 많았다. 
-
+자신의 Undo, Redo를 다른 사람들과 공유하여 서로의 History가 동기화되도록 구현하기 위해서는 고려해야할 사항이 많았다. 
 사용자들간의 Undo, Redo가 복합적으로 작용하는 상황을 매끄럽게 구현하기 위해서는 각 사용자들이 어떠한 방식으로 Undo, Redo를 전달받을것인가를 고민해보아야했다.
-
-<br/>
 
 1. 사용자들은 개체를 생성, 조작, Undo, Redo를하면 해당하는 동작수행 후 
 그 사용자의 Objects를 `UndoStore`배열에 추가한다.
 2. `자신의 Objects`, `UndoStore`, `RedoStore`를 Socket을 통해 `Server`에 보내준다.
 3. Server는 받은 데이터를 다시 모든 사용자들에게 `broadcast`해준다.
-4. 해당 데이터를 다른 사용자가 받게되면 
-해당 데이터에 맞게 자신의 Objects, UndoStore, RedoStore를 덮어씌운다.
+4. 해당 데이터를 다른 사용자가 받게되면 해당 데이터에 맞게 자신의 Objects, UndoStore, RedoStore를 덮어씌운다.
 5. 덮어씌워진 Objects에 맞게 렌더링(Visualizer)한다.
-
-<br/>
-
-기본적으로는 Local환경과 비슷하지만 Socket통신을 통해 서로의 상태를 공유하는 로직을 구현하였다.
-
-<br/>
-
-## 얕은 복사 이슈
-
- 위의 로직대로 코드를 작성하였지만 Socket통신을 하는 과정에서 데이터가 제대로 전달되지 않는 문제가 발생하였다.
-
-분명 Socket을 통해 Server로 데이터를 전송할때는 제대로된 데이터였지만, Server에서 받은 데이터는 빈 배열 또는 서로 꼬여진 데이터였다.
-
-문제의 원인은 Server로 데이터를 전달할때 데이터를 담는 과정에서의 스프레드 연산자를 통한 얕은 복사였다. 해당 문제를 해결하기위해 lodash의 deepClone을 사용하였다.
-
-그 결과 서로의 Undo, Redo, Objects들이 정상적으로 전송되었다.
-
-<br/>
-<br/>
-
 </details>
 
 <details>
-  <summary>제스처 추가 로직</summary>
+<summary>[얕은 복사 이슈]</summary>
 
-## 로직의 모티브
+위의 로직대로 코드를 작성하였지만 Socket통신을 하는 과정에서 데이터가 제대로 전달되지 않는 문제가 발생하였다.
 
+분명 Socket을 통해 Server로 데이터를 전송할때는 제대로된 데이터였지만, Server에서 받은 데이터는 빈 배열 또는 서로 꼬여진 데이터였다.
+
+문제의 원인은 Server로 전달할 데이터를 담는 과정에서 스프레드 연산자를 통한 얕은 복사였고, 해당 문제를 해결하기위해 lodash의 deepClone을 사용하였다.
+
+그 결과 서로의 Undo, Redo, Objects들이 정상적으로 전송되었다.
+</details>
+<br>
+
+## 3. 제스처 추가 로직
+
+### [로직의 모티브]
  Portable TrackPad가 가지는 장점중 하나는 사용자가 자신만의 제스처를 만들어서 사용할 수 있다는 것이다. 
 기존에 제스처와 크게 겹치지 않는다면 자신이 원하는 동작을 원하는 기능에 할당할 수 있다. 
 사용자에게 보다 나은 사용자 경험을 제공한다는 우리팀의 목표에 부합하는 기능이었다.
@@ -479,43 +377,32 @@ Objects의 내용을 Canvas에 렌더링해주는 함수 `Visualizer`를 실행�
 
  그러던 중 어릴적에 했었던 한붓그리기가 떠올랐다. 여러개의 점을 하나씩 지나가며 결국은 하나의 도형을 만들어내는 놀이인 한붓그리기. 만약 사용자가 제스처를 생성할때 한붓그리기처럼 경로를 나타내는 점을 생성하고, 제스처를 사용할때는 그 경로와 얼마나 유사한지를 알아낸다면? 이러한 모티브를 통해서 로직을 짜게되었다.
 
-## 로직의 구현
-
-<br/>
-
-1. 사용자는 제스처를 생성할때 그리는 경로를 나타내는 x,y좌표들이 담긴 배열을 DB에 저장한다.
-2. 그리고 사용자가 해당 제스처를 사용할때는 사용자가 입력한 제스처의 x,y좌표들이
-DB에 저장되어있는 x,y좌표들을 얼마나 포함하는가?를 계산한다.
-3. 만약 일정 기준을 통과하면 제스처 사용, 통과하지 못하면 제스처 사용 실패를 판정한다.
-4. 이를 그림으로 나타내면 다음과 같다.
+### [로직의 구현]
+- 사용자는 제스처를 생성할때 그리는 경로를 나타내는 x,y좌표들이 담긴 배열을 DB에 저장한다.
+- 그리고 사용자가 해당 제스처를 사용할때는 사용자가 입력한 제스처의 x,y좌표들이 DB에 저장되어있는 x,y좌표들을 얼마나 포함하는가?를 계산한다.
+- 만약 일정 기준을 통과하면 제스처 사용, 통과하지 못하면 제스처 사용 실패를 판정한다.
+- 이를 그림으로 나타내면 다음과 같다.
 
     ![제스처 추가 설명](https://user-images.githubusercontent.com/99075014/200192143-4a1cd20e-036d-4061-be64-1180938f891d.png)
-    
-<br/>
-<br/>
 
 </details>
+<br>
 
-<details>
-  <summary>삼각함수</summary>
-
-## 로직의 모티브
-
+## 4. 삼각함수
  Portable TrackPad 프로젝트와 Gesture Drawing 프로젝트를 밀접하게 연결하기 위해서 만들었던 기능 중 하나는 Portable TrackPad에서 삼각형, 사각형, 원을 그리면 해당 모양을 인식해서 Gesture Drawing에서 그 모양을 출력해주는 것이었다. 하지만 작업을 시작하면서 사용자가 모양을 그렸을 때 모양을 인식하는 로직을 짜는 것이 생각했던 것보다 어렵다는 것을 깨달았다.
 
  어떤 방식으로 로직을 구현해야할지 고민하던 중, 사용자가 그리는 그림의 모서리의 개수를 계산해서 어떤 모양을 그리는지 확인하는 방법을 생각했고, 다음과 같은 로직을 짜게 되었다.
 
-1. 사용자가 처음 터치한 곳의 x, y 좌표를 시작점과 기준점으로 저장한다.
-2. 사용자가 그리기 시작하면, 기준점을 중심으로 가상의 사각형을 그려 사용자가 사각형 밖으로 나가는지 체크한다.     
-3. 사용자가 사각형 밖으로 나가면, 기준점의 좌표와 현재 좌표를 계산한 좌표 changeX, changeY를 구한 뒤 atan2에 좌표값을 넣어 각도를 계산한다. 그리고 각도를 이전 각도와 비교해서 일정 값 이상 차이가 생긴 경우  모서리로 판단하고 count를 올린다.
-4. 사용자가 터치를 끝냈다면, 시작점의 좌표와 마지막 터치한 곳의 좌표를 비교하여 도형을 완성했는지를 검사하고, 완성하지 못했다면 도형을 생성하지 않고, 완성했다면 모서리 개수에 해당하는 도형을 그려준다.
+- 사용자가 처음 터치한 곳의 x, y 좌표를 시작점과 기준점으로 저장한다.
+- 사용자가 그리기 시작하면, 기준점을 중심으로 가상의 사각형을 그려 사용자가 사각형 밖으로 나가는지 체크한다.     
+- 사용자가 사각형 밖으로 나가면, 기준점의 좌표와 현재 좌표를 계산한 좌표 changeX, changeY를 구한 뒤 atan2에 좌표값을 넣어 각도를 계산한다. 그리고 각도를 이전 각도와 비교해서 일정 값 이상 차이가 생긴 경우  모서리로 판단하고 count를 올린다.
+- 사용자가 터치를 끝냈다면, 시작점의 좌표와 마지막 터치한 곳의 좌표를 비교하여 도형을 완성했는지를 검사하고, 완성하지 못했다면 도형을 생성하지 않고, 완성했다면 모서리 개수에 해당하는 도형을 그려준다.
 
 </details>
 
 <br/>
-<br/>
 
-# 개별 회고
+## 🔮 개별 회고
 
 ### 김태섭
 
@@ -555,29 +442,22 @@ DB에 저장되어있는 x,y좌표들을 얼마나 포함하는가?를 계산한
 ### 이상아
 
 <details>
-  <summary>한줄평: 같이 하면 못할게 없지😎</summary>
+  <summary>한줄평: 같이 하면 못할게 없지</summary>
   
-처음에 팀플 하기 전엔 막연한 기대가 많았다. 같이 무언가를 만들어내면 얼마나 재미있을까? 다행이도 팀원들을 너무 잘 만나서… 큰 어려움 없이 즐겁게 잘 끝낼 수 있었다. 나에게 있어 제일 큰 난관은 팀원들과의 갈등이 아닌 들어보지도 못했던 새로운 기술들을 바로바로 구현해 내는 것이었다. 처음엔 공식문서를 보면서 새로운 것들을 익히기도 바쁜데 시간이 한정되어 있어 바로 코드를 적어가며 실시간으로 기술구현을 해내야 하는게 막막했는데, 그 때 팀원들의 도움을 많이 받았다. 아는 부분이 있으면 바로바로 공유하고, 막히는 부분이 있으면 어떤 문제가 있는지 체크해주며, 해결하지 못하면 밤을 새서라도 같이 도와주면서 해결했다. 나는 이 부분이 사실 너무 좋았다.  밤새 수많은 에러를 보면 스트레스도 많이 쌓이지만 팀원들과 머리 싸매고 고민해서 해결하면 서로 박수도 치고  격려도 해주고 등도 두들겨주고. 되돌아 보면 그 순간순간들이 많이 기억난다. 사실 팀원들의 도움을 많이 받으며 과제를 해서 개인 프로젝트를 어떻게 해야할 지 지금 걱정이 크게 앞서긴 하지만, 지금 상황에선 무사히 팀플을 잘 끝냈고, 너무 고마웠고 다들 수고 많이했다는 생각만 하기로 했다. 
+이번 팀 프로젝트는 다행히도 팀원들을 너무 잘 만나서 큰 어려움 없이 즐겁게 잘 끝낼 수 있었다. 어떤 기술을 적용하는 게 더 효율적일까요? 어떻게 코드를 효율적으로 짤 수 있을까요? 어떻게 배치하는 게 이쁜가요? 등 끊임없이 소통하며 만들어 나가는 게 재미있었다. 나에게 있어 제일 큰 난관은 팀원들과의 갈등이 아닌 이전에 사용해보지 않았던 리액트 네이티브를 사용해 바로 결과물로 만들어내는 것이었다. 처음엔 공식문서를 보면서 새로운 것들을 익히기도 바쁜데 한정된 시간에 바로 기술 구현을 해내야만 하는 게 막막했는데 팀원들과 이야기하며 이것저것 시도해보니 어느새 하나씩 완성되어가고 있었다. 아는 부분이 있으면 바로바로 공유하고, 막히는 부분이 있으면 어떤 문제가 있는지 체크해주며, 해결하지 못하면 밤을 새워서라도 같이 도와주면서 해결했다. 나는 이 부분이 사실 너무 좋았다. 쉽게 해결되지 않는 수많은 에러를 보면 스트레스도 많이 쌓이지만 팀원들과 머리 싸매고 고민해서 해결하면 서로 박수도 치고 격려도 해주는 과정은 정말 뜻깊었다. 결국엔 코드도 사람이 짜는 것이고 서로 간의 협동이 더 좋은 결과물을 만들어 낼 수 있다는 걸 느꼈다. 앞으로 개인 프로젝트를 하면 막히는 부분에서 함께 해결할 팀원들이 없다는 게 막막하지만, 이 경험들을 토대로 잘 해결할 수 있을 것만 같다.
 
 </details>
 
 
 <br/>
-<br/>
 
-# 참여 개발자
+## 🌈 참여 개발자
 
-## 김태섭
-
-
+### 김태섭
 Contact : serbi2012@naver.com
 
-## 김병석
-
-
+### 김병석
 Contact: hallabong0126@gmail.com
 
-## 이상아
-
-
-Contact: comt-mix@gmail.com
+### 이상아
+Contact: comt.mix@gmail.com
