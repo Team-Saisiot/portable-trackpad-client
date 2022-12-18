@@ -442,7 +442,7 @@ Socket통신 흐름을 통해 어느 구간에서 딜레이가 생길지를 파�
 ### 김병석
 
 <details>
-  <summary>한줄평: 언두리두 스쿠비두</summary>
+  <summary>한줄평: 소통의 팀 프로젝트</summary>
   
 처음 진행하는 프로젝트였고, 게다가 팀 프로젝트였기에 시작하기 전부터 많은 걱정을 했었다. 하지만 팀원들과 소통하며 역할을 정하고, 서로가 맡은 일을 진행하면서 누군가 해결하면 함께 기뻐하고, 어려움을 겪으면 함께 고민하면서 어느새 걱정이 즐거움으로 바뀌어 있었다.
 
@@ -470,10 +470,10 @@ Socket통신 흐름을 통해 어느 구간에서 딜레이가 생길지를 파�
 ## 🌈 참여 개발자
 
 ### 김태섭
-Contact : serbi2012@naver.com
+Contact: serbi2012@naver.com
 
 ### 김병석
-Contact: hallabong0126@gmail.com
+Contact: bskim.2212@gmail.com
 
 ### 이상아
 Contact: comt.mix@gmail.com
